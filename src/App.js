@@ -11,7 +11,7 @@ function App() {
     const [nextTurn, setNextTurn] = useState(0);
     const [turnHistory, setTurnHistory] = useState([]);
     const [currentBox, setCurrentBox] = useState(1);
-    const [boxes, setBoxes] = useState([1, 2, 3, 4, 5]);
+    const [boxes] = useState([1, 2, 3, 4, 5]);
 
     const requestTurn = () => {
         setNextTurn(nextTurn + 1);
@@ -41,7 +41,7 @@ function App() {
     const [nextTurnV2, setNextTurnV2] = useState(0);
     const [turnHistoryV2, setTurnHistoryV2] = useState([]);
     const [turnQueue, setTurnQueue] = useState([]);
-    const [boxesV2, setBoxesV2] = useState([1, 2, 3, 4, 5]);
+    const [boxesV2] = useState([1, 2, 3, 4, 5]);
     const [currentBoxV2, setCurrentBoxV2] = useState(1);
 
     const requestTurnV2 = () => {
@@ -52,15 +52,17 @@ function App() {
 
     const takeTurnV2 = () => {
         if (turnQueue.length > 0) {
-            const newTurn = turnQueue.shift();
+            const newQueue = [...turnQueue];
+            const newTurn = newQueue.shift();
             setCurrentTurnV2(newTurn.turn);
             setCurrentBoxV2(newTurn.box);
-            setTurnQueue(turnQueue);
+            setTurnQueue(newQueue);
             setTurnHistoryV2((prevHistory) => [{ turn: newTurn.turn, box: newTurn.box }, ...prevHistory].slice(0, 8));
         } else {
             alert("No hay turnos pendientes");
         }
     };
+
 
     const resetTurnsV2 = () => {
         setCurrentTurnV2(0);
