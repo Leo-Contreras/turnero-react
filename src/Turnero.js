@@ -7,10 +7,17 @@ import PendingTurns from "./Componentes/PendingTurns";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jsPDF } from "jspdf";
 import QRCode from 'qrcode';
+import Logo from "./assets/logo guinda bc.png";
 
+// Agrega la importación de tu logo aquí
 
 
 function Turnero({ moduleName }) {
+
+    const fontSizePDF = 40 ; //Tamaño letra en PDF
+    const logoWidth = 100; // Ancho del logo
+    const logoHeight = 50; // Alto del logo
+    const qrCodeSize = 100; // Tamaño del código QR
     const [currentTurn, setCurrentTurn] = useState(0);
     const [nextTurn, setNextTurn] = useState(0);
     const [turnHistory, setTurnHistory] = useState([]);
@@ -53,13 +60,21 @@ function Turnero({ moduleName }) {
             const yOffset = (pageHeight - contentHeight) / 2;
 
             const text1 = `Turno: ${turnName}`; // usamos el número de turno formateado en el texto del PDF
-            const text2 = `Modulo: ${boxName}`;
+            const text2 = `Modulo: ${moduleName}`;
+            const text3 = `Caja: ${currentBox}`;
             const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
             const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
+            const xOffset3 = (pageWidth - pdfDoc.getStringUnitWidth(text3) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
 
-            pdfDoc.text(text1, xOffset1, 10 + yOffset);
-            pdfDoc.text(text2, xOffset2, 30 + yOffset);
-            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 50 + yOffset, 50, 50); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
+            pdfDoc.setFontSize(fontSizePDF); // Aumenta el tamaño de la fuente a 40
+            pdfDoc.text(text1, xOffset1 - fontSizePDF/2, 10 + yOffset);
+            pdfDoc.text(text2, xOffset2 - fontSizePDF/2, 30 + yOffset);
+            pdfDoc.text(text3, xOffset3 - fontSizePDF/2, 50 + yOffset);
+
+            // Agrega el logo en la esquina superior izquierda
+            pdfDoc.addImage(Logo, 'PNG', 10, 10, logoWidth, logoHeight);
+
+            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - qrCodeSize/2, 50 + yOffset, qrCodeSize, qrCodeSize); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
             pdfDoc.save(`Turno_${moduleName}${formattedTurnNumber}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
         } else {
             alert("No hay turnos pendientes");
@@ -71,8 +86,6 @@ function Turnero({ moduleName }) {
         setNextTurn(0);
         setTurnHistory([]);
     };
-
-
 
     return (
         <div className="container bg-dark">
