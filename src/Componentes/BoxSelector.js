@@ -1,16 +1,22 @@
-import React from 'react';
+function BoxSelector({ boxes, currentBox, setCurrentBox, moduleName }) {
 
-function BoxSelector({ boxes, currentBox, setCurrentBox }) {
+
     return (
-        <div className="mb-3">
-            <label className="form-label">Selecciona una caja:</label>
-            <select className="form-select" value={currentBox} onChange={e => setCurrentBox(Number(e.target.value))}>
-                {boxes.map(box => (
-                    <option key={box} value={box}>Caja {box}</option>
+        <div className="card">
+            <div className="card-header">
+                {`${moduleName}`}
+            </div>
+            <div className="list-group list-group-flush">
+                {boxes.map((box) => (
+                    <button key={box} onClick={() => setCurrentBox(box)}
+                            className={`list-group-item list-group-item-action ${currentBox === box ? 'active' : ''}`}>
+                        {`${moduleName} ${box}`}
+                    </button>
                 ))}
-            </select>
+            </div>
         </div>
     );
 }
 
 export default BoxSelector;
+
