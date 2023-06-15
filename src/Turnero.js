@@ -30,13 +30,16 @@ function Turnero({ moduleName }) {
             const newTurn = currentTurn + 1;
             setCurrentTurn(newTurn);
 
-            // Usamos el moduleName recibido en las props y currentBox
-            const boxName = `${moduleName} ${currentBox}`;
 
+            // Usamos el moduleName recibido en las props y currentBox
+            const formattedTurnNumber = newTurn.toString().padStart(3, '0'); // formateamos el número del turno a 3 dígitos llenando con ceros si es necesario
+            const boxName = `${moduleName} ${currentBox}`;
+            const truncatedModuleName = moduleName.substring(0, 2);
+            const turnName =  `${truncatedModuleName}${formattedTurnNumber}`;
             setTurnHistory((prevHistory) => [{turn: newTurn, box: boxName}, ...prevHistory].slice(0, size_historial));
 
             // Generate QR Code
-            const qrCodeText = `Turn: ${newTurn}, Box: ${boxName}`;
+            const qrCodeText = `Turn: ${moduleName}${formattedTurnNumber}, Box: ${boxName}`; // usamos el número de turno formateado en el texto del código QR
             const qrCodeDataURL = await QRCode.toDataURL(qrCodeText);
 
             // Generate PDF
@@ -49,7 +52,7 @@ function Turnero({ moduleName }) {
             const contentHeight = 70;
             const yOffset = (pageHeight - contentHeight) / 2;
 
-            const text1 = `Turno: ${newTurn}`;
+            const text1 = `Turno: ${turnName}`; // usamos el número de turno formateado en el texto del PDF
             const text2 = `Modulo: ${boxName}`;
             const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
             const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
@@ -57,15 +60,11 @@ function Turnero({ moduleName }) {
             pdfDoc.text(text1, xOffset1, 10 + yOffset);
             pdfDoc.text(text2, xOffset2, 30 + yOffset);
             pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 50 + yOffset, 50, 50); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
-            pdfDoc.save(`Turno_${newTurn}.pdf`);
+            pdfDoc.save(`Turno_${moduleName}${formattedTurnNumber}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
         } else {
             alert("No hay turnos pendientes");
         }
     };
-
-
-
-
 
     const resetTurns = () => {
         setCurrentTurn(0);
