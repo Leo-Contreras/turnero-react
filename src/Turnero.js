@@ -43,19 +43,26 @@ function Turnero({ moduleName }) {
             const pdfDoc = new jsPDF();
 
             const pageWidth = pdfDoc.internal.pageSize.getWidth();
+            const pageHeight = pdfDoc.internal.pageSize.getHeight();
+
+            // calculate content height
+            const contentHeight = 70;
+            const yOffset = (pageHeight - contentHeight) / 2;
+
             const text1 = `Turno: ${newTurn}`;
             const text2 = `Modulo: ${boxName}`;
             const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
             const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
 
-            pdfDoc.text(text1, xOffset1, 10);
-            pdfDoc.text(text2, xOffset2, 20);
-            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30, 50, 50); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
+            pdfDoc.text(text1, xOffset1, 10 + yOffset);
+            pdfDoc.text(text2, xOffset2, 30 + yOffset);
+            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 50 + yOffset, 50, 50); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
             pdfDoc.save(`Turno_${newTurn}.pdf`);
         } else {
             alert("No hay turnos pendientes");
         }
     };
+
 
 
 
