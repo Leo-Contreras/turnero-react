@@ -74,7 +74,7 @@ function Turnero({ moduleName }) {
             // Agrega el logo en la esquina superior izquierda
             pdfDoc.addImage(Logo, 'PNG', 10, 10, logoWidth, logoHeight);
 
-            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - qrCodeSize/2, 50 + yOffset, qrCodeSize, qrCodeSize); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
+            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - qrCodeSize/2, 70 + yOffset, qrCodeSize, qrCodeSize); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
             pdfDoc.save(`Turno_${moduleName}${formattedTurnNumber}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
         } else {
             alert("No hay turnos pendientes");
