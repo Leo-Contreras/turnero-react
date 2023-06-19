@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { Container, Alert, Row, Col, Button, Modal, InputGroup, FormControl, Toast } from 'react-bootstrap';
-
+import Logo from '../../assets/logo adbc.png'
 
 
 
@@ -27,8 +27,7 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
         // Generar el nombre del turno
         const formattedTurnNumber = (listaTurnos.length + 1).toString().padStart(3, '0');
         const boxName = selectedCaja;
-        const truncatedModuleName = boxName.substring(0, 2);
-        const turnName = `${truncatedModuleName}${formattedTurnNumber}`;
+        const turnName = `${formattedTurnNumber}`;
 
         // Generar el código QR
         const qrCodeText = `Turno: ${turnName}, Caja: ${boxName}`;
@@ -48,14 +47,26 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
         const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
         const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
 
-        pdfDoc.setFontSize(40); // Aumenta el tamaño de la fuente a 40
-        pdfDoc.text(text1, xOffset1, 10 + yOffset);
-        pdfDoc.text(text2, xOffset2, 30 + yOffset);
+        const response = await fetch(Logo);
+        const logoBlob = await response.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(logoBlob);
+        reader.onloadend = function () {
+            const base64Logo = reader.result;
 
-        pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 70 + yOffset, 50, 50); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
-        pdfDoc.save(`Turno_${turnName}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
-    };
+            // Añadir el logo al documento PDF
+            pdfDoc.addImage(base64Logo, 'PNG', 50, 10, 100, 100);  // ajusta las coordenadas y dimensiones según sea necesario
 
+
+            pdfDoc.setFontSize(40); // Aumenta el tamaño de la fuente a 40
+            pdfDoc.text(text1, xOffset1 - 20, yOffset);
+            pdfDoc.text(text2, xOffset2 - 20, 20 + yOffset);
+            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30 + yOffset, 70, 70); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
+            pdfDoc.text("Revalida la tarjeta de", 50, 110 + yOffset);
+            pdfDoc.text("Circulación", 70, 130 + yOffset);
+            pdfDoc.save(`Turno_${turnName}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
+        };
+    }
 
     return (
         <Container className="d-flex justify-content-center align-items-center vh-100">

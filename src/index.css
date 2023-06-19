@@ -5,18 +5,28 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #202020;
-  color: #ffffff !important;
+  background-color: #6a1232 !important;
+  color: #ffffff ;
+
 }
 
-.card {
-  background-color: #333333;
-  color: #ffffff;
+
+
+.custom-button {
+  background-color: white !important;
+  color: black !important;
+  border-color: black !important;
+}
+
+
+.card-body{
+  color: white;
 }
 
 .btn-primary {
   background-color: #1a1a1a;
   border-color: #1a1a1a;
+
 }
 
 .btn-primary:hover {
