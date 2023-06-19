@@ -46,19 +46,19 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
         const text2 = `Caja: ${boxName}`;
         const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
         const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
+        let logoDataUrl = Logo;  // asumiendo que Logo es una ruta válida y accesible a tu imagen.
 
         const response = await fetch(Logo);
         const logoBlob = await response.blob();
         const reader = new FileReader();
         reader.readAsDataURL(logoBlob);
         reader.onloadend = function () {
-            const base64Logo = reader.result;
 
             // Añadir el logo al documento PDF
-            pdfDoc.addImage(base64Logo, 'PNG', 50, 10, 100, 100);  // ajusta las coordenadas y dimensiones según sea necesario
+            pdfDoc.addImage(logoDataUrl, 'PNG', 50, 10, 100, 100);
 
-
-            pdfDoc.setFontSize(40); // Aumenta el tamaño de la fuente a 40
+            pdfDoc.setFontSize(45); // Aumenta el tamaño de la fuente a 40
+            pdfDoc.setTextColor(106, 18, 50); // Esto establecerá el color del texto en tu valor RGB
             pdfDoc.text(text1, xOffset1 - 20, yOffset);
             pdfDoc.text(text2, xOffset2 - 20, 20 + yOffset);
             pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30 + yOffset, 70, 70); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
