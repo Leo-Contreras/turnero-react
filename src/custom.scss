@@ -1,0 +1,59 @@
+// custom.scss
+
+// Importar funciones y variables de Bootstrap
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+
+// Redefinir las variables de Bootstrap
+$body-bg: #333;  // color de fondo
+$body-color: #fff;  // color del texto
+
+// Importar el resto de Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.box-btn {
+  background-color: #B3B3B3; /* Gris claro */
+  border: none;
+  color: #000; /* Texto negro */
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  line-height: 80px;
+  transition: all 0.5s;
+}
+
+.box-btn:hover {
+  background-color: #8C8C8C; /* Gris un poco más oscuro cuando se pasa el ratón por encima */
+  color: #fff; /* Texto blanco cuando se pasa el ratón por encima */
+  cursor: pointer;
+}
+
+.box-btn:active {
+  background-color: #666666; /* Gris más oscuro cuando se presiona el botón */
+  color: #fff; /* Texto blanco cuando se presiona el botón */
+}
+
+.title {
+  text-align: center;
+  color: #fff; /* Texto blanco */
+  margin-bottom: 20px;
+}
+
+.no-boxes {
+  text-align: center;
+  color: #fff; /* Texto blanco */
+}

@@ -5,7 +5,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: black;
+  background-color: #202020;
+  color: #ffffff !important;
+}
+
+.card {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+.btn-primary {
+  background-color: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.btn-primary:hover {
+  background-color: #404040;
+  border-color: #404040;
 }
 
 code {

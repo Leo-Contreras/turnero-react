@@ -28,10 +28,8 @@
   color: #61dafb;
 }
 body {
-
-background-color: black;
+  background-color: #333 !important;
 }
-
 .bg-black {
   background-color: black;
 }
