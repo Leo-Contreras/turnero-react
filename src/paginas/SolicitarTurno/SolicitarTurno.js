@@ -1,33 +1,20 @@
-import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
-import { Container, Alert, Row, Col, Button, Modal, InputGroup, FormControl, Toast } from 'react-bootstrap';
-import Logo from '../../assets/logo adbc.png'
+import { Container, Alert, Row, Col, Button} from 'react-bootstrap';
+import Logo from '../../assets/logo guinda bc.png'
 
 
+const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
 
 
-const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
-    const [show, setShow] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-    const [selectedCaja, setSelectedCaja] = useState(null);
-    const [codigo, setCodigo] = useState("");
-
-    const handleClose = () => setShow(false);
-    const handleShow = (caja) => {
-        setSelectedCaja(caja);
-        setShow(true);
-    };
-
-    const handleSolicitarTurno = async () => {
-        onSolicitarTurno(selectedCaja, codigo);
-        setShow(false);
-        setShowToast(true);
-
+    const handleSolicitarTurno = async (caja) => {
+        //actualizar la lista de turnos , el cual tambien se refleja en el visualizador
+        onSolicitarTurno(caja.nombre);
         // Generar el nombre del turno
         const formattedTurnNumber = (listaTurnos.length + 1).toString().padStart(3, '0');
-        const boxName = selectedCaja;
+        const boxName = caja.nombre;
         const turnName = `${formattedTurnNumber}`;
+
 
         // Generar el código QR
         const qrCodeText = `Turno: ${turnName}, Caja: ${boxName}`;
@@ -46,7 +33,7 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
         const text2 = `Caja: ${boxName}`;
         const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
         const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
-        let logoDataUrl = Logo;  // asumiendo que Logo es una ruta válida y accesible a tu imagen.
+        let logoDataUrl = Logo;
 
         const response = await fetch(Logo);
         const logoBlob = await response.blob();
@@ -55,15 +42,16 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
         reader.onloadend = function () {
 
             // Añadir el logo al documento PDF
-            pdfDoc.addImage(logoDataUrl, 'PNG', 50, 10, 100, 100);
+            pdfDoc.addImage(logoDataUrl, 'PNG', 70, 20, 84, 40);
 
-            pdfDoc.setFontSize(45); // Aumenta el tamaño de la fuente a 40
-            pdfDoc.setTextColor(106, 18, 50); // Esto establecerá el color del texto en tu valor RGB
-            pdfDoc.text(text1, xOffset1 - 20, yOffset);
-            pdfDoc.text(text2, xOffset2 - 20, 20 + yOffset);
-            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30 + yOffset, 70, 70); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
-            pdfDoc.text("Revalida la tarjeta de", 50, 110 + yOffset);
-            pdfDoc.text("Circulación", 70, 130 + yOffset);
+            pdfDoc.setFontSize(70);
+            pdfDoc.setFont('Times-Bold' ,'Bold' , '50');
+            pdfDoc.setTextColor(106, 18, 50);
+            pdfDoc.text(text1, xOffset1 - 40, yOffset);
+            pdfDoc.text(text2, xOffset2 - 30, 20 + yOffset);
+            pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30 + yOffset, 70, 60); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
+            pdfDoc.text("Revalida la tarjeta de", 30, 110 + yOffset);
+            pdfDoc.text("Circulación", 50, 130 + yOffset);
             pdfDoc.save(`Turno_${turnName}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
         };
     }
@@ -78,56 +66,19 @@ const SolicitarTurno = ({ cajas, onSolicitarTurno, listaTurnos }) => {
                     </Alert>
                 ) : (
                     <Row className="justify-content-md-center">
-                        {cajas.map((caja, index) => (
+                        {Object.values(cajas).map((caja, index) => (
                             <Col md="auto" key={index} className="my-3">
-                                <Button variant="outline-light" className="p-3" style={{ width: '200px', height: '200px' }} onClick={() => handleShow(caja)}>
-                                    {caja}
+                                <Button variant="outline-light" className="p-3" style={{ width: '200px', height: '200px' }} onClick={() => handleSolicitarTurno(caja)}>
+                                    {caja.nombre}
                                 </Button>
                             </Col>
                         ))}
+
                     </Row>
                 )}
-
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Solicitar turno para {selectedCaja}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <InputGroup className="mb-3">
-                            <InputGroup.Text id="basic-addon1">Código</InputGroup.Text>
-                            <FormControl
-                                placeholder="Ingresa tu código"
-                                aria-label="Codigo"
-                                aria-describedby="basic-addon1"
-                                value={codigo}
-                                onChange={e => setCodigo(e.target.value)}
-                            />
-                        </InputGroup>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Cerrar
-                        </Button>
-                        <Button variant="primary" onClick={handleSolicitarTurno}>
-                            Solicitar turno
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-
-                <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide style={{
-                    position: 'absolute',
-                    top: 20,
-                    right: 20,
-                }}>
-                    <Toast.Header>
-                        <strong className="mr-auto">Nuevo turno</strong>
-                    </Toast.Header>
-                    <Toast.Body>Turno solicitado para {selectedCaja}</Toast.Body>
-                </Toast>
             </div>
         </Container>
     );
 };
 
 export default SolicitarTurno;
-

@@ -3,11 +3,17 @@
   background-color: #D4AF37;
 }
 
-.table-dark {
-  background-color: white !important;
-  color: black !important;
+
+.transparent-table {
+  background-color: transparent !important;
+
 }
 
-.table-dark .first-row {
-  color: red !important; /* or whatever color you want for the oldest turn */
+.transparent-table th,
+.transparent-table td {
+  background-color: transparent !important;
+  color: #000000 !important; // Color del texto en negro
+  font-weight: bold; // Texto en negrita
+  font-size: larger;
 }
+

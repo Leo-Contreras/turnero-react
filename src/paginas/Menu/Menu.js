@@ -12,17 +12,22 @@ import 'bootstrap/dist/css/bootstrap.min.css'
             <Card.Text>
               <div style={{ display: 'block', marginBottom: '10px' }}>
                 <Button block as={Link} to="/visualizador-turnos" className="w-100 custom-button">
-                  Visualizador de turnos
+                  Visualizador de Turnos
                 </Button>
               </div>
               <div style={{ display: 'block', marginBottom: '10px' }}>
                 <Button  block as={Link} to="/solicitar-turno" className="w-100 custom-button">
-                  Solicitar turno
+                  Generar Turno para Ciudadano
+                </Button>
+              </div>
+              <div style={{ display: 'block', marginBottom: '10px' }}>
+                <Button block as={Link} to="/Login" className="w-100 custom-button">
+                  Tomar Turno - MODULO
                 </Button>
               </div>
               <div style={{ display: 'block', marginBottom: '10px' }}>
                 <Button  block as={Link} to="/registrar-caja" className="w-100 custom-button">
-                  Registrar caja
+                  Registrar Modulo Nuevo
                 </Button>
               </div>
               <div style={{ display: 'block', marginBottom: '10px' }}>
@@ -37,7 +42,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
               </div>
               <div style={{ display: 'block', marginBottom: '10px' }}>
                 <Button block as={Link} to="/lista-cajas" className="w-100 custom-button">
-                  Lista de Cajas Registradas
+                  Lista de Modulos
                 </Button>
               </div>
             </Card.Text>

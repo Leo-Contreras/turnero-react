@@ -15,39 +15,52 @@ import './custom.scss';
 function App() {
 
     const [listaTurnos, setListaTurnos] = useState([
-        { Caja: "CAJA 1", Turno: 1 },
-        { Caja: "CAJA 2", Turno: 2 },
-        { Caja: "CAJA 1", Turno: 3 },
-        { Caja: "CAJA 2", Turno: 4 },
-        { Caja: "CAJA 1", Turno: 5 },
-        { Caja: "CAJA 2", Turno: 6 },
-        { Caja: "CAJA 1", Turno: 7 },
-        { Caja: "CAJA 2", Turno: 8 },
-        { Caja: "CAJA 1", Turno: 9 },
-        { Caja: "CAJA 2", Turno: 10 },
+        { Caja: "MODULO 1", Turno: 1 },
+        { Caja: "MODULO 2", Turno: 2 },
+        { Caja: "MODULO 1", Turno: 3 },
+        { Caja: "MODULO 2", Turno: 4 },
+        { Caja: "MODULO 1", Turno: 5 },
     ]);
 
-    const [cajas, setCajas] = useState(["CAJA 1" , "CAJA 2" , "ADBC"]);
+    const [cajas, setCajas] = useState([
+        { nombre: "MODULO 1", password: "password1" },
+        { nombre: "MODULO 2", password: "password2" },
+        { nombre: "ADBC", password: "password3" },
+    ]);
 
-    const handleRegistrarCaja = (cajaNombre) => {
-        setCajas([...cajas, cajaNombre]);
+    const [cajaAutenticada, setCajaAutenticada] = useState(null);
+    const [estaAutenticado, setEstaAutenticado] = useState(false);
+
+    const handleRegistrarCaja = (caja) => {
+        setCajas([...cajas, caja]);
     };
 
     const handleBorrarCaja = (cajaNombre) => {
-        setCajas((prevCajas) => prevCajas.filter((caja) => caja !== cajaNombre));
+        setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
     };
 
+    const solicitarTurno = (caja_nombre) => {
+        setListaTurnos(oldTurnos => [...oldTurnos, { Caja: caja_nombre, Turno: oldTurnos.length + 1}]);
+    };
 
+    const handleLogin = (nombre, password) => {
+        const moduloEncontrado = cajas.find(caja => caja.nombre === nombre && caja.password === password);
 
-    const solicitarTurno = (caja, codigo) => {
-        setListaTurnos(oldTurnos => [...oldTurnos, { Caja: caja, Turno: oldTurnos.length + 1, Codigo: codigo }]);
+        if (moduloEncontrado) {
+            setCajaAutenticada(moduloEncontrado);
+            setEstaAutenticado(true); // Ajusta el estado a true cuando el login es exitoso
+            console.log(`Inicio de sesión exitoso para: ${nombre}`);
+        } else {
+            console.log('Error: combinación de nombre y contraseña incorrecta');
+            // Aquí puedes manejar el error de inicio de sesión
+        }
     };
 
 
     return (
         <Router>
             <Routes>
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login onLogin={handleLogin} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} />} />
                 <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
                 <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
