@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Card, Form, Button } from 'react-bootstrap';
+import {Alert, Card, Form, Button, Container} from 'react-bootstrap';
 
 const RegistrarCaja = ({  onRegistrarCaja}) => {
   const [cajaNombre, setCajaNombre] = useState('');
@@ -24,7 +24,7 @@ const RegistrarCaja = ({  onRegistrarCaja}) => {
 
   return (
       <div>
-        <Card style={{ width: '18rem', height: '24rem', margin: 'auto', marginTop: '10%' }}>
+        <Card style={{ width: '18rem', height: '16rem', margin: 'auto', marginTop: '10%' }}>
           <Card.Body>
             <Card.Title className="text-center">Registrar Modulo</Card.Title>
             {showAlert && (
@@ -53,9 +53,11 @@ const RegistrarCaja = ({  onRegistrarCaja}) => {
                     onChange={handleInputChange}
                 />
               </Form.Group>
-              <Button variant="primary" type="submit" block>
-                Registrar
-              </Button>
+              <Container className="align-items-center">
+                <Button variant="primary" type="submit" block style={{marginTop: '20px', backgroundColor: 'maroon', borderColor: 'gray'}}>
+                  Registrar
+                </Button>
+              </Container>
             </Form>
           </Card.Body>
         </Card>
