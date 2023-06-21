@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from './paginas/Login/Login';
 import RegistroCaja from './paginas/RegistroCaja/RegistroCaja';
@@ -40,8 +40,12 @@ function App() {
     };
 
     const handleBorrarCaja = (cajaNombre) => {
-        setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
+        if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
+            setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
+            setListaTurnos((prevTurnos) => prevTurnos.filter((turno) => turno.Caja !== cajaNombre));
+        }
     };
+
 
     const solicitarTurno = (caja_nombre) => {
         setListaTurnos(oldTurnos => [...oldTurnos, { Caja: caja_nombre, Turno: oldTurnos.length + 1}]);
@@ -59,6 +63,26 @@ function App() {
             // Aquí puedes manejar el error de inicio de sesión
         }
     };
+
+    useEffect(() => {
+        // Al montar el componente, intenta cargar los datos del localStorage.
+        const loadedTurnos = localStorage.getItem("turnos");
+        const loadedCajas = localStorage.getItem("cajas");
+
+        if (loadedTurnos) {
+            setListaTurnos(JSON.parse(loadedTurnos));
+        }
+
+        if (loadedCajas) {
+            setCajas(JSON.parse(loadedCajas));
+        }
+    }, []);
+
+    useEffect(() => {
+        // Cuando listaTurnos o cajas cambien, actualiza el localStorage.
+        localStorage.setItem("turnos", JSON.stringify(listaTurnos));
+        localStorage.setItem("cajas", JSON.stringify(cajas));
+    }, [listaTurnos, cajas]);
 
 
     return (

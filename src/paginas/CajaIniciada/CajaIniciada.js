@@ -13,25 +13,24 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada , onDelete }) => {
 
     return (
         <Container style={{marginTop : '10%'}}>
-            <h1>Inicio de Sesion exitoso</h1>
+            <h1>Lista de turnos Modulo:{cajaAutenticada.nombre}</h1>
             <Table striped bordered hover variant="dark">
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Caja</th>
                     <th>Turno</th>
                     <th>Atendido</th>
+                    <th>Terminar Turno</th>
                 </tr>
                 </thead>
                 <tbody>
                 {turnosDelModulo.map((turno, index) => (
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{turno.Caja}</td>
                         <td>{turno.Turno}</td>
                         <td>{turno.Asignado ? 'Si' : 'No'}</td>
                         <td>
-                            <button onClick={() => handleDelete(turno)}>Eliminar</button> {/* Botón agregado */}
+                            <button onClick={() => handleDelete(turno)}>Terminar</button> {/* Botón agregado */}
                         </td>
                     </tr>
                 ))}

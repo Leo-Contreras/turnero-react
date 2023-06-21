@@ -15,7 +15,7 @@ const TurnViewer = ({ turnos }) => {
                                     <h2>Turno</h2>
                                 </Row>
                                 <Row >
-                                  <h1 style={{color : 'red', fontSize: '90px'}}> {turnos[0]?.Turno}</h1>
+                                  <h1 style={{color : 'red', fontSize: '90px'}}> {turnos[0]?.Turno.toString().padStart(3, '0')}</h1>
                                 </Row>
                             </Col>
                             <Col className="text-center">
