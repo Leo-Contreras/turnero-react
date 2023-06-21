@@ -35,6 +35,10 @@ function App() {
         setCajas([...cajas, caja]);
     };
 
+    const handleDeleteTurno = (turno) => {
+        setListaTurnos((prevTurnos) => prevTurnos.filter((t) => t.Turno !== turno.Turno));
+    };
+
     const handleBorrarCaja = (cajaNombre) => {
         setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
     };
@@ -60,7 +64,7 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/login" element={<Login onLogin={handleLogin} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} />} />
+                <Route path="/login" element={<Login onLogin={handleLogin} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onDelete={handleDeleteTurno}/>} />
                 <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
                 <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />

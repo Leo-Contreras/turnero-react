@@ -1,8 +1,15 @@
 import React from 'react'
 import {Container, Table} from "react-bootstrap";
 
-const CajaIniciada = ({ listaTurnos, cajaAutenticada }) => {
+const CajaIniciada = ({ listaTurnos, cajaAutenticada , onDelete }) => {
     const turnosDelModulo = cajaAutenticada ? listaTurnos.filter(turno => turno.Caja === cajaAutenticada.nombre) : [];
+
+    const handleDelete = (turno) => {
+        const confirmDelete = window.confirm(`Estás seguro que deseas eliminar el turno ${turno.Turno}?`);  // ventana de confirmación
+        if (confirmDelete) {
+            onDelete(turno);
+        }
+    };
 
     return (
         <Container style={{marginTop : '10%'}}>
@@ -23,6 +30,9 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada }) => {
                         <td>{turno.Caja}</td>
                         <td>{turno.Turno}</td>
                         <td>{turno.Asignado ? 'Si' : 'No'}</td>
+                        <td>
+                            <button onClick={() => handleDelete(turno)}>Eliminar</button> {/* Botón agregado */}
+                        </td>
                     </tr>
                 ))}
                 </tbody>

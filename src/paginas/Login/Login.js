@@ -3,7 +3,7 @@ import {Form, Button, Container} from 'react-bootstrap';
 import CajaIniciada from "../CajaIniciada/CajaIniciada";
 
 
-const Login = ({ onLogin, estaAutenticado, cajaAutenticada, listaTurnos }) => {
+const Login = ({ onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete}) => {
   const [nombre, setNombre] = useState('');
   const [password, setPassword] = useState('');
 
@@ -13,7 +13,7 @@ const Login = ({ onLogin, estaAutenticado, cajaAutenticada, listaTurnos }) => {
   };
 
   if (estaAutenticado) {
-    return <CajaIniciada  listaTurnos={listaTurnos} cajaAutenticada={cajaAutenticada}/> // Asegúrate de pasar los props necesarios a CajaIniciada
+    return <CajaIniciada  listaTurnos={listaTurnos} cajaAutenticada={cajaAutenticada} onDelete={onDelete}/> // Asegúrate de pasar los props necesarios a CajaIniciada
   }
 
   return (
