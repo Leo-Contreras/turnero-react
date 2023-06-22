@@ -24,14 +24,10 @@ const RegistrarCaja = ({  onRegistrarCaja}) => {
 
   return (
       <div>
-        <Card style={{ width: '18rem', height: '16rem', margin: 'auto', marginTop: '10%' }}>
+        <Card style={{ width: '18rem', height: '24rem', margin: 'auto', marginTop: '10%' }}>
           <Card.Body>
             <Card.Title className="text-center">Registrar Modulo</Card.Title>
-            {showAlert && (
-                <Alert variant="success" onClose={() => setShowAlert(false)} dismissible>
-                  Se registró correctamente el módulo: <strong>{cajaNombre}</strong>
-                </Alert>
-            )}
+
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Form.Label>Nombre del Modulo</Form.Label>
@@ -54,9 +50,15 @@ const RegistrarCaja = ({  onRegistrarCaja}) => {
                 />
               </Form.Group>
               <Container className="align-items-center">
-                <Button variant="primary" type="submit" block style={{marginTop: '20px', backgroundColor: 'maroon', borderColor: 'gray'}}>
+                <Button variant="primary" type="submit" block style={{marginTop: '20px',marginBottom:'5%', backgroundColor: 'maroon', borderColor: 'gray'}}>
                   Registrar
                 </Button>
+
+                {showAlert && (
+                    <Alert variant="success" onClose={() => setShowAlert(false)} dismissible>
+                      Modulo registrado correctamente.
+                    </Alert>
+                )}
               </Container>
             </Form>
           </Card.Body>

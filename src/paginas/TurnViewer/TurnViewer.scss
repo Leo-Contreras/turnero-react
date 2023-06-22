@@ -3,16 +3,30 @@
   background-color: #D4AF37;
 }
 
+.tabla-aumentada {
+  font-size: 18px;  /* Ajusta este valor según tus necesidades */
+}
+
 
 .transparent-table {
   background-color: transparent !important;
 
 }
 
+.tabla-aumentada thead {
+  font-size: 20px;  /* Ajusta este valor según tus necesidades */
+}
+
+.tabla-aumentada tbody {
+  font-size: 18px;  /* Ajusta este valor según tus necesidades */
+}
+
+
+
 .transparent-table th,
 .transparent-table td {
   background-color: transparent !important;
-  color: #000000 !important; // Color del texto en negro
+  color: #000000 ; // Color del texto en negro
   font-weight: bold; // Texto en negrita
   font-size: larger;
 }

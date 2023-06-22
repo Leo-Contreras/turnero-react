@@ -1,21 +1,34 @@
 import React from 'react';
-import { Card, ListGroup, Button } from 'react-bootstrap';
+import {Card, Button, Table} from 'react-bootstrap';
 
 const ListaDeCajas = ({ cajas = [], onBorrarCaja }) => {
     return (
         <Card style={{ width: '18rem', margin: 'auto', marginTop: '10%' }}>
             <Card.Body>
                 <Card.Title className="text-center">Listado de Cajas Registradas</Card.Title>
-                <ListGroup>
+                <Table striped bordered hover>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre del Módulo</th>
+                        <th>Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {cajas.map((caja, index) => (
-                        <ListGroup.Item key={index}>
-                            {caja.nombre} {/* Asegúrate de renderizar caja.nombre en lugar de simplemente caja */}
-                            <Button variant="danger" onClick={() => onBorrarCaja(caja.nombre)}> {/* Asegúrate de pasar caja.nombre en lugar de simplemente caja */}
-                                Borrar
-                            </Button>
-                        </ListGroup.Item>
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{caja.nombre}</td>
+                            <td>
+                                <Button variant="danger" onClick={() => onBorrarCaja(caja.nombre)}>
+                                    Borrar
+                                </Button>
+                            </td>
+                        </tr>
                     ))}
-                </ListGroup>
+                    </tbody>
+                </Table>
+
             </Card.Body>
         </Card>
     );

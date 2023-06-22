@@ -4,9 +4,7 @@
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';
 
-// Redefinir las variables de Bootstrap
-$body-bg: #333;  // color de fondo
-$body-color: #fff;  // color del texto
+
 
 // Importar el resto de Bootstrap
 @import '~bootstrap/scss/bootstrap';
@@ -22,7 +20,7 @@ $body-color: #fff;  // color del texto
 }
 
 .box-btn {
-  background-color: #B3B3B3; /* Gris claro */
+  background-color: #6a1232; /* Gris claro */
   border: none;
   color: #000; /* Texto negro */
   text-align: center;

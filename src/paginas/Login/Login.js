@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {Form, Button, Container} from 'react-bootstrap';
+import {Form, Button, Container, Card} from 'react-bootstrap';
 import CajaIniciada from "../CajaIniciada/CajaIniciada";
 
 
-const Login = ({ onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete}) => {
+const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete}) => {
   const [nombre, setNombre] = useState('');
   const [password, setPassword] = useState('');
 
@@ -13,26 +13,38 @@ const Login = ({ onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDele
   };
 
   if (estaAutenticado) {
-    return <CajaIniciada  listaTurnos={listaTurnos} cajaAutenticada={cajaAutenticada} onDelete={onDelete}/> // Asegúrate de pasar los props necesarios a CajaIniciada
+    return (
+        <Container className="align-items-center">
+          <CajaIniciada listaTurnos={listaTurnos} cajaAutenticada={cajaAutenticada} onDelete={onDelete}/>
+          <Button variant="danger" onClick={onLogout} style={{marginTop: '20px'}}>Cerrar Sesión</Button> {/* Asegúrate de que onLogout esté definido y maneje la acción de cierre de sesión */}
+        </Container>
+    ); // Asegúrate de pasar los props necesarios a CajaIniciada
   }
 
+
   return (
-      <Container>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="nombre">
-          <Form.Label>Nombre</Form.Label>
-          <Form.Control type="text" placeholder="Nombre de la caja" value={nombre} onChange={e => setNombre(e.target.value)} required />
-        </Form.Group>
-
-        <Form.Group controlId="password">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
-        </Form.Group>
-
-        <Button variant="primary" type="submit">Iniciar sesión</Button>
-      </Form>
-      </Container>
+      <div>
+        <Card style={{ width: '18rem', height: '16rem', margin: 'auto', marginTop: '10%' }}>
+          <Card.Body>
+            <Card.Title className="text-center">Iniciar Sesión</Card.Title>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="nombre">
+                <Form.Label>Nombre del Módulo</Form.Label>
+                <Form.Control type="text" placeholder="Ingrese el nombre del modulo" value={nombre} onChange={e => setNombre(e.target.value)} required />
+              </Form.Group>
+              <Form.Group controlId="password">
+                <Form.Label>Contraseña del Módulo</Form.Label>
+                <Form.Control type="password" placeholder="Ingrese la contraseña del modulo" value={password} onChange={e => setPassword(e.target.value)} required />
+              </Form.Group>
+              <Container className="align-items-center">
+                <Button variant="primary" type="submit" block style={{marginTop: '20px', backgroundColor: 'maroon', borderColor: 'gray'}}>
+                  Iniciar Sesión
+                </Button>
+              </Container>
+            </Form>
+          </Card.Body>
+        </Card>
+      </div>
   );
 };
-
 export default Login;

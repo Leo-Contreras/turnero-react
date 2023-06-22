@@ -7,9 +7,10 @@ import ResetearTurnos from './paginas/ResetearTurnos/ResetearTurnos';
 import SolicitarTurno from './paginas/SolicitarTurno/SolicitarTurno';
 import ListaDeCajas from "./paginas/Lista de cajas/ListaDeCajas";
 import TurnViewer from "./paginas/TurnViewer/TurnViewer";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Menu from "./paginas/Menu/Menu";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
+
 
 
 function App() {
@@ -64,6 +65,12 @@ function App() {
         }
     };
 
+    const handleLogout = () => {
+        setCajaAutenticada(null);
+        setEstaAutenticado(false);
+        console.log('Sesión cerrada');
+    };
+
     useEffect(() => {
         // Al montar el componente, intenta cargar los datos del localStorage.
         const loadedTurnos = localStorage.getItem("turnos");
@@ -86,18 +93,22 @@ function App() {
 
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<Login onLogin={handleLogin} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onDelete={handleDeleteTurno}/>} />
-                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
-                <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
-                <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
-                <Route path="/resetear-turnos" element={<ResetearTurnos />} />
-                <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
-                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} imagen="url-de-tu-imagen-o-video" logo="url-de-tu-logo" />} />
-                <Route path="/" element={<Menu />} /> {/* Página de inicio, por ejemplo. */}
-            </Routes>
-        </Router>
+        <div className="App">
+                <div className="MainContent">
+                        <Router>
+                            <Routes>
+                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onDelete={handleDeleteTurno}/>} />
+                                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
+                                <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
+                                <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
+                                <Route path="/resetear-turnos" element={<ResetearTurnos />} />
+                                <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
+                                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} imagen="url-de-tu-imagen-o-video" logo="url-de-tu-logo" />} />
+                                <Route path="/" element={<Menu />} /> {/* Página de inicio, por ejemplo. */}
+                            </Routes>
+                        </Router>
+                </div>
+        </div>
     );
 }
 

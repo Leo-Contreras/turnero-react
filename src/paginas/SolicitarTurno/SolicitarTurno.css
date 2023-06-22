@@ -1,0 +1,10 @@
+.boton-solicitar-turno {
+    background-color: #6a1232 !important;
+    color: white !important;
+    border-color: #6a1232;
+    transition: box-shadow .3s ease; /* Añade una transición para suavizar el cambio de sombra */
+}
+
+.boton-solicitar-turno:hover {
+    box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.2); /* Añade una sombra en el estado hover */
+}
