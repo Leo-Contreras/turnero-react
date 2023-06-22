@@ -11,6 +11,7 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada , onDelete }) => {
         }
     };
 
+
     return (
         <Container style={{marginTop : '10%'}}>
             <h1>Lista de turnos Modulo:{cajaAutenticada.nombre}</h1>
@@ -25,7 +26,7 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada , onDelete }) => {
                 </thead>
                 <tbody>
                 {turnosDelModulo.map((turno, index) => (
-                    <tr key={index}>
+                    <tr key={turno.id}>
                         <td>{index + 1}</td>
                         <td>{turno.Turno}</td>
                         <td>{turno.Asignado ? 'Si' : 'No'}</td>

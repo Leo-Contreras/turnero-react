@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import { collection, getDocs, doc, setDoc, deleteDoc , onSnapshot } from "firebase/firestore";
+import { firestore } from "./Componentes/Firebase/firebaseConfig"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from './paginas/Login/Login';
 import RegistroCaja from './paginas/RegistroCaja/RegistroCaja';
@@ -10,6 +12,7 @@ import TurnViewer from "./paginas/TurnViewer/TurnViewer";
 import Menu from "./paginas/Menu/Menu";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
+
 
 
 
@@ -32,25 +35,118 @@ function App() {
     const [cajaAutenticada, setCajaAutenticada] = useState(null);
     const [estaAutenticado, setEstaAutenticado] = useState(false);
 
-    const handleRegistrarCaja = (caja) => {
-        setCajas([...cajas, caja]);
-    };
 
-    const handleDeleteTurno = (turno) => {
-        setListaTurnos((prevTurnos) => prevTurnos.filter((t) => t.Turno !== turno.Turno));
-    };
+    useEffect(() => {
+        const fetchCajas = async () => {
+            const cajasCollection = await getDocs(collection(firestore, 'cajas'));
+            setCajas(cajasCollection.docs.map(doc => doc.data()));
+        };
 
-    const handleBorrarCaja = (cajaNombre) => {
-        if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
-            setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
-            setListaTurnos((prevTurnos) => prevTurnos.filter((turno) => turno.Caja !== cajaNombre));
+        const fetchTurnos = async () => {
+            const turnosCollection = await getDocs(collection(firestore, 'turnos'));
+            setListaTurnos(turnosCollection.docs.map(doc => doc.data()));
+        };
+
+        fetchCajas();
+        fetchTurnos();
+    }, []);
+
+    useEffect(() => {
+        const cajasRef = collection(firestore, 'cajas');
+        const unsubscribe = onSnapshot(cajasRef, (snapshot) => {
+            let cajas = [];
+            snapshot.forEach((doc) => {
+                cajas.push(doc.data());
+            });
+            setCajas(cajas);
+        });
+
+        // Remember to unsubscribe from your realtime listener on unmount
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const turnosRef = collection(firestore, 'turnos');
+        const unsubscribe = onSnapshot(turnosRef, (snapshot) => {
+            let turnos = [];
+            snapshot.forEach((doc) => {
+                turnos.push(doc.data());
+            });
+            setListaTurnos(turnos);
+        });
+
+        // Remember to unsubscribe from your realtime listener on unmount
+        return () => unsubscribe();
+    }, []);
+
+
+
+
+    const handleRegistrarCaja = async (caja) => {
+        setCajas(prevCajas => [...prevCajas, caja]);
+
+        try {
+            await setDoc(doc(collection(firestore, 'cajas'), caja.nombre), caja);
+        } catch (error) {
+            console.error("Error writing document: ", error);
         }
     };
 
 
-    const solicitarTurno = (caja_nombre) => {
-        setListaTurnos(oldTurnos => [...oldTurnos, { Caja: caja_nombre, Turno: oldTurnos.length + 1}]);
+
+    const handleDeleteTurno = async (turno) => {
+        setListaTurnos((prevTurnos) => prevTurnos.filter((t) => t.id !== turno.id));
+
+        try {
+            await deleteDoc(doc(collection(firestore, 'turnos'), turno.id));
+        } catch (error) {
+            console.error("Error deleting document: ", error);
+        }
     };
+
+
+    const handleBorrarCaja = async (cajaNombre) => {
+        if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
+            // Primero, eliminar el módulo.
+            setCajas(prevCajas => prevCajas.filter(caja => caja.nombre !== cajaNombre));
+
+            try {
+                await deleteDoc(doc(collection(firestore, 'cajas'), cajaNombre));
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+            }
+
+            // Segundo, obtener todos los turnos para este módulo.
+            const turnosDelModulo = listaTurnos.filter(turno => turno.Caja === cajaNombre);
+
+            // Tercero, eliminar todos los turnos para este módulo.
+            turnosDelModulo.forEach(async (turno) => {
+                setListaTurnos(prevTurnos => prevTurnos.filter(t => t.id !== turno.id));
+
+                try {
+                    await deleteDoc(doc(collection(firestore, 'turnos'), turno.id));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                }
+            });
+        }
+    };
+
+
+
+
+    const solicitarTurno = async (caja_nombre) => {
+        const id = Date.now().toString();
+        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1 };
+        setListaTurnos(prevTurnos => [...prevTurnos, newTurno]);
+
+        try {
+            await setDoc(doc(collection(firestore, 'turnos'), id), newTurno);
+        } catch (error) {
+            console.error("Error writing document: ", error);
+        }
+    };
+
 
     const handleLogin = (nombre, password) => {
         const moduloEncontrado = cajas.find(caja => caja.nombre === nombre && caja.password === password);

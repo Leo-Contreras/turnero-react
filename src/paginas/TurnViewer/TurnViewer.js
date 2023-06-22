@@ -89,7 +89,7 @@ const TurnViewer = ({ turnos }) => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {turnos.slice(0,9).map((turno, index) => (
+                                        {turnos.slice(0,8).map((turno, index) => (
                                             <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
                                                 <td>{turno.Turno.toString().padStart(3, '0')}</td>
                                                 <td>{turno.Caja}</td>
