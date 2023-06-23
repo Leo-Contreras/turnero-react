@@ -55,8 +55,7 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
 
     return (
         <Container className="mt-5" style={{ marginTop: '10%' }}>
-            <h1 className="mb-4" >Lista de turnos Módulo: {cajaAutenticada.nombre}</h1>
-            <h2 className="mb-2" >Turnos Pendientes</h2>
+            <h1 className="mb-4" >Lista de turnos Pendiente en el Módulo <strong>{cajaAutenticada.nombre}</strong></h1>
             <Table striped bordered hover variant="dark">
                 <thead>
                 <tr>
@@ -75,10 +74,10 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
                         <td>
                             {turno.Estado === ESTADO_PENDIENTE ? (
                                 <>
-                                    <button onClick={() => handleAbrirTurno(turno)}>Abrir</button>
+                                    <button onClick={() => handleAbrirTurno(turno)}>Tomar Turno</button>
                                 </>
                             ) : (
-                                <button onClick={() => handleCerrarTurno(turno)}>Cerrar</button>
+                                <button onClick={() => handleCerrarTurno(turno)}>Finalizar Turno</button>
                             )}
                         </td>
                     </tr>
