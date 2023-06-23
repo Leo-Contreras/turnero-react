@@ -5,25 +5,22 @@ import Fondo from '../../assets/fondo_blanco_gris.jpeg';
 import Video from '../../assets/Constancia_Antecedentes_Penales.mp4';
 import LogoCorazon from '../../assets/logo corazonxdelante.png';
 import {useEffect} from "react";
+import {ESTADO_TERMINADO} from "../../ENV/constantes";
 
 const TurnViewer = ({ turnos }) => {
-    // Al montar y desmontar el componente, cambia el color de fondo del body
+
     useEffect(() => {
-        // Guarda el color de fondo original del body
+
         const originalBackgroundColor = document.body.style.backgroundColor;
-
-        // Cambia el color de fondo del body al montar el componente
         document.body.style.backgroundColor = '#6a1232';
-
-        // Restaura el color de fondo original del body al desmontar el componente
         return () => {
             document.body.style.backgroundColor = originalBackgroundColor;
         };
-    }, []);  // El arreglo vacío indica que este efecto solo se ejecuta al montar y desmontar el componente
+    }, []);
 
+    const turnosPendientes = turnos.filter(turno => turno.Estado !== ESTADO_TERMINADO);
 
     return (
-
             <Container className="turnViewer" style={{marginTop: '0%'}}>
                 <Col>
                         <Row className="align-items-center bg-dark text-white p-3 mb-3" style={{border: '1px solid white'}}>
@@ -32,7 +29,7 @@ const TurnViewer = ({ turnos }) => {
                                     <h2>Turno</h2>
                                 </Row>
                                 <Row >
-                                  <h1 style={{color : 'red', fontSize: '90px'}}> {turnos[0]?.Turno.toString().padStart(3, '0')}</h1>
+                                    <h1 style={{color : 'red', fontSize: '90px'}}> {turnosPendientes[0]?.Turno.toString().padStart(3, '0')}</h1>
                                 </Row>
                             </Col>
                             <Col className="text-center">
@@ -89,7 +86,7 @@ const TurnViewer = ({ turnos }) => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {turnos.slice(0,9).map((turno, index) => (
+                                        {turnosPendientes.slice(0,8).map((turno, index) => (
                                             <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
                                                 <td>{turno.Turno.toString().padStart(3, '0')}</td>
                                                 <td>{turno.Caja}</td>
@@ -108,8 +105,6 @@ const TurnViewer = ({ turnos }) => {
                         </Row>
                 </Col>
             </Container>
-
-
     );
 };
 

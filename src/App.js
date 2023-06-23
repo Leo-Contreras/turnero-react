@@ -10,17 +10,18 @@ import TurnViewer from "./paginas/TurnViewer/TurnViewer";
 import Menu from "./paginas/Menu/Menu";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
+import {ESTADO_EN_PROCESO, ESTADO_PENDIENTE, ESTADO_TERMINADO} from "./ENV/constantes";
 
 
 
 function App() {
 
     const [listaTurnos, setListaTurnos] = useState([
-        { Caja: "MODULO 1", Turno: 1 },
-        { Caja: "MODULO 2", Turno: 2 },
-        { Caja: "MODULO 1", Turno: 3 },
-        { Caja: "MODULO 2", Turno: 4 },
-        { Caja: "MODULO 1", Turno: 5 },
+        { Caja: "MODULO 1", Turno: 1, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
+        { Caja: "MODULO 2", Turno: 2, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
+        { Caja: "MODULO 1", Turno: 3, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
+        { Caja: "MODULO 2", Turno: 4, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
+        { Caja: "MODULO 1", Turno: 5, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
     ]);
 
     const [cajas, setCajas] = useState([
@@ -37,20 +38,58 @@ function App() {
     };
 
     const handleDeleteTurno = (turno) => {
-        setListaTurnos((prevTurnos) => prevTurnos.filter((t) => t.Turno !== turno.Turno));
+        setListaTurnos((prevTurnos) =>
+            prevTurnos.filter((t) => t.Turno !== turno.Turno)
+        );
     };
 
     const handleBorrarCaja = (cajaNombre) => {
-        if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
-            setCajas((prevCajas) => prevCajas.filter((caja) => caja.nombre !== cajaNombre));
-            setListaTurnos((prevTurnos) => prevTurnos.filter((turno) => turno.Caja !== cajaNombre));
+        if (
+            window.confirm(
+                `¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`
+            )
+        ) {
+            setCajas((prevCajas) =>
+                prevCajas.filter((caja) => caja.nombre !== cajaNombre)
+            );
+            setListaTurnos((prevTurnos) =>
+                prevTurnos.filter((turno) => turno.Caja !== cajaNombre)
+            );
         }
     };
 
-
     const solicitarTurno = (caja_nombre) => {
-        setListaTurnos(oldTurnos => [...oldTurnos, { Caja: caja_nombre, Turno: oldTurnos.length + 1}]);
+        setListaTurnos((prevTurnos) => [
+            ...prevTurnos,
+            {
+                Caja: caja_nombre,
+                Turno: prevTurnos.length + 1,
+                Estado: ESTADO_PENDIENTE,
+                TiempoInicio: null,
+                TiempoFin: null,
+            },
+        ]);
     };
+
+    const abrirTurno = (turno) => {
+        setListaTurnos((prevTurnos) => {
+            const updatedTurno = { ...turno, Estado: ESTADO_EN_PROCESO, TiempoInicio: Date.now() };
+            const filteredTurnos = prevTurnos.filter((t) => t.Turno !== turno.Turno);
+            return [updatedTurno, ...filteredTurnos];
+        });
+    };
+
+
+    const cerrarTurno = (turno) => {
+        setListaTurnos((prevTurnos) =>
+            prevTurnos.map((t) =>
+                t.Turno === turno.Turno
+                    ? { ...t, Estado: ESTADO_TERMINADO, TiempoFin: Date.now() }
+                    : t
+            )
+        );
+    };
+
 
     const handleLogin = (nombre, password) => {
         const moduloEncontrado = cajas.find(caja => caja.nombre === nombre && caja.password === password);
@@ -97,7 +136,21 @@ function App() {
                 <div className="MainContent">
                         <Router>
                             <Routes>
-                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onDelete={handleDeleteTurno}/>} />
+                                <Route
+                                    path="/login"
+                                    element={
+                                        <Login
+                                            onLogin={handleLogin}
+                                            onLogout={handleLogout}
+                                            estaAutenticado={estaAutenticado}
+                                            cajaAutenticada={cajaAutenticada}
+                                            listaTurnos={listaTurnos}
+                                            onDelete={handleDeleteTurno}
+                                            abrirTurno={abrirTurno}
+                                            cerrarTurno={cerrarTurno}
+                                        />
+                                    }
+                                />
                                 <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
                                 <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
                                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />

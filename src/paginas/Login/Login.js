@@ -3,7 +3,8 @@ import {Form, Button, Container, Card} from 'react-bootstrap';
 import CajaIniciada from "../CajaIniciada/CajaIniciada";
 
 
-const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete}) => {
+
+const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete , abrirTurno , cerrarTurno}) => {
   const [nombre, setNombre] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,7 +16,13 @@ const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurno
   if (estaAutenticado) {
     return (
         <Container className="align-items-center">
-          <CajaIniciada listaTurnos={listaTurnos} cajaAutenticada={cajaAutenticada} onDelete={onDelete}/>
+          <CajaIniciada
+              listaTurnos={listaTurnos}
+              cajaAutenticada={cajaAutenticada}
+              onDelete={onDelete}
+              abrirTurno={abrirTurno}
+              cerrarTurno={cerrarTurno}
+          />
           <Button variant="danger" onClick={onLogout} style={{marginTop: '20px'}}>Cerrar Sesión</Button> {/* Asegúrate de que onLogout esté definido y maneje la acción de cierre de sesión */}
         </Container>
     ); // Asegúrate de pasar los props necesarios a CajaIniciada
