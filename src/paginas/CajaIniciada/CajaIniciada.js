@@ -1,17 +1,24 @@
-import React from 'react';
-import { Container, Table } from 'react-bootstrap';
-import {ESTADO_EN_PROCESO, ESTADO_PENDIENTE, ESTADO_TERMINADO} from "../../ENV/constantes";
+import React, {useEffect , useState} from 'react';
+import {Button, Container, Table} from 'react-bootstrap';
+import {API_URL_TURNERO, ESTADO_EN_PROCESO, ESTADO_PENDIENTE, ESTADO_TERMINADO} from "../../ENV/constantes";
 import Papa from 'papaparse';
 
+const CajaIniciada = ({ cajaAutenticada, abrirTurno, cerrarTurno }) => {
 
+    const [listaTurnos, setTurnos] = useState([]);
 
+    useEffect(() => {
+        console.log(cajaAutenticada.nombre)
+        fetch(API_URL_TURNERO + "turnos/" + cajaAutenticada.nombre)
+            .then(response => response.json())
+            .then(data => setTurnos(data))
+            .catch(error => console.error('Error:', error));
+    }, [cajaAutenticada.nombre]);
 
-const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno }) => {
-
-    const turnosDelModulo = cajaAutenticada ? listaTurnos.filter(turno => turno.Caja === cajaAutenticada.nombre) : [];
-    const turnosPendientes = turnosDelModulo.filter(turno => turno.Estado === ESTADO_PENDIENTE);
-    const turnosRealizados = turnosDelModulo.filter(turno => turno.Estado === ESTADO_TERMINADO);
-    const turnosAbiertos = turnosDelModulo.filter(turno => turno.Estado === ESTADO_EN_PROCESO);
+    const turnosDelModulo = cajaAutenticada ? listaTurnos.filter(turno => turno.modulo === cajaAutenticada.nombre) : [];
+    const turnosPendientes = turnosDelModulo.filter(turno => turno.estado === ESTADO_PENDIENTE);
+    const turnosRealizados = turnosDelModulo.filter(turno => turno.estado === ESTADO_TERMINADO);
+    const turnosAbiertos = turnosDelModulo.filter(turno => turno.estado === ESTADO_EN_PROCESO);
     const turnosMostrados = [...turnosAbiertos, ...turnosPendientes];
     const handleAbrirTurno = (turno) => {
         abrirTurno(turno);
@@ -21,13 +28,12 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
         cerrarTurno(turno);
     };
 
-
     const exportarCSV = () => {
-        const fields = ['Caja', 'Turno', 'Estado', 'TiempoInicio', 'TiempoFin', 'Duracion'];
+        const fields = ['Modulo', 'Turno', 'Estado', 'TiempoInicio', 'TiempoFin', 'Duracion'];
 
         const turnosFormateados = listaTurnos.map(turno => {
-            const inicio = new Date(turno.TiempoInicio);
-            const fin = new Date(turno.TiempoFin);
+            const inicio = new Date(turno.tiempo_inicio);
+            const fin = new Date(turno.tiempo_fin);
             const duracion = Math.abs(fin - inicio);
 
             return {
@@ -52,7 +58,6 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
         link.click();
     };
 
-
     return (
         <Container className="mt-5" style={{ marginTop: '10%' }}>
             <h1 className="mb-4" >Lista de turnos Pendiente en el Módulo <strong>{cajaAutenticada.nombre}</strong></h1>
@@ -66,18 +71,18 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
                 </tr>
                 </thead>
                 <tbody>
-                {turnosMostrados.map((turno, index) => (
+                {turnosMostrados.map((turn, index) => (
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{turno.Turno}</td>
-                        <td>{turno.Estado}</td>
+                        <td>{turn.turno}</td>
+                        <td>{turn.estado}</td>
                         <td>
-                            {turno.Estado === ESTADO_PENDIENTE ? (
+                            {turn.estado === ESTADO_PENDIENTE ? (
                                 <>
-                                    <button onClick={() => handleAbrirTurno(turno)}>Tomar Turno</button>
+                                    <button onClick={() => handleAbrirTurno(turn)}>Tomar Turno</button>
                                 </>
                             ) : (
-                                <button onClick={() => handleCerrarTurno(turno)}>Finalizar Turno</button>
+                                <button onClick={() => handleCerrarTurno(turn)}>Finalizar Turno</button>
                             )}
                         </td>
                     </tr>
@@ -96,20 +101,20 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, abrirTurno, cerrarTurno })
                 </tr>
                 </thead>
                 <tbody>
-                {turnosRealizados.map((turno, index) => (
+                {turnosRealizados.map((turn, index) => (
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{turno.Turno}</td>
-                        <td>{new Date(turno.TiempoInicio).toLocaleString()}</td>
-                        <td>{new Date(turno.TiempoFin).toLocaleString()}</td>
+                        <td>{turn.turno}</td>
+                        <td>{new Date(turn.tiempo_inicio).toLocaleString()}</td>
+                        <td>{new Date(turn.tiempo_fin).toLocaleString()}</td>
                     </tr>
                 ))}
                 </tbody>
 
             </Table>
-
-            <button onClick={exportarCSV}>Exportar CSV</button>
-
+            <Button variant="primary" onClick={exportarCSV} type="submit" block style={{marginTop: '20px', backgroundColor: 'maroon', borderColor: 'gray'}}>
+                Exportar CSV
+            </Button>
 
         </Container>
     );

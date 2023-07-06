@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {Form, Button, Container, Card} from 'react-bootstrap';
 import CajaIniciada from "../CajaIniciada/CajaIniciada";
 
 
-
-const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurnos , onDelete , abrirTurno , cerrarTurno}) => {
+const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada , onDelete , abrirTurno , cerrarTurno}) => {
   const [nombre, setNombre] = useState('');
   const [password, setPassword] = useState('');
+
+
+
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -17,7 +19,6 @@ const Login = ({ onLogout, onLogin, estaAutenticado, cajaAutenticada, listaTurno
     return (
         <Container className="align-items-center">
           <CajaIniciada
-              listaTurnos={listaTurnos}
               cajaAutenticada={cajaAutenticada}
               onDelete={onDelete}
               abrirTurno={abrirTurno}

@@ -5,20 +5,18 @@ import Logo from '../../assets/logo guinda bc.png'
 import './SolicitarTurno.css'
 
 
-const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
-
-
+const SolicitarTurno = ({ cajas , onSolicitarTurno  }) => {
     const handleSolicitarTurno = async (caja) => {
         //actualizar la lista de turnos , el cual tambien se refleja en el visualizador
-        onSolicitarTurno(caja.nombre);
-        // Generar el nombre del turno
-        const formattedTurnNumber = (listaTurnos.length + 1).toString().padStart(3, '0');
+        const numeroTurno = await onSolicitarTurno(caja.nombre);  // aquí caja es el objeto, no solo el nombre
+
+        const formattedTurnNumber = numeroTurno.toString().padStart(3, '0');
         const boxName = caja.nombre;
         const turnName = `${formattedTurnNumber}`;
 
 
         // Generar el código QR
-        const qrCodeText = `Turno: ${turnName}, Caja: ${boxName}`;
+        const qrCodeText = `Turno: ${turnName}, Modulo: ${boxName}`;
         const qrCodeDataURL = await QRCode.toDataURL(qrCodeText);
 
         // Generar el PDF
@@ -26,7 +24,6 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
 
         const pageWidth = pdfDoc.internal.pageSize.getWidth();
         const pageHeight = pdfDoc.internal.pageSize.getHeight();
-
         const contentHeight = 70;
         const yOffset = (pageHeight - contentHeight) / 2;
 
@@ -63,7 +60,7 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
                 <h1>Selecciona la caja para solicitar turno</h1>
                 {cajas.length === 0 ? (
                     <Alert variant="warning">
-                        No hay ninguna caja registrada.
+                        No hay ningun Modulo registrado.
                     </Alert>
                 ) : (
                     <Row className="justify-content-md-center">

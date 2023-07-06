@@ -5,7 +5,7 @@ const ListaDeCajas = ({ cajas = [], onBorrarCaja }) => {
     return (
         <Card style={{ width: '18rem', margin: 'auto', marginTop: '10%' }}>
             <Card.Body>
-                <Card.Title className="text-center">Listado de Cajas Registradas</Card.Title>
+                <Card.Title className="text-center">Listado de Modulos Registrados</Card.Title>
                 <Table striped bordered hover>
                     <thead>
                     <tr>

@@ -10,31 +10,50 @@ import TurnViewer from "./paginas/TurnViewer/TurnViewer";
 import Menu from "./paginas/Menu/Menu";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
-import {ESTADO_EN_PROCESO, ESTADO_PENDIENTE, ESTADO_TERMINADO} from "./ENV/constantes";
-
+import {API_URL_TURNERO, ESTADO_PENDIENTE} from "./ENV/constantes";
 
 
 function App() {
 
-    const [listaTurnos, setListaTurnos] = useState([
-        { Caja: "MODULO 1", Turno: 1, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 2", Turno: 2, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 1", Turno: 3, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 2", Turno: 4, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 1", Turno: 5, Estado: ESTADO_PENDIENTE, TiempoInicio: null, TiempoFin: null },
-    ]);
+    const [modulos, setModulos] = useState([]);
+    const [listaTurnos, setListaTurnos] = useState([]);
 
-    const [cajas, setCajas] = useState([
-        { nombre: "MODULO 1", password: "password1" },
-        { nombre: "MODULO 2", password: "password2" },
-        { nombre: "ADBC", password: "password3" },
-    ]);
+    useEffect(() => {
+        // Cargar los modulos
+        fetch(API_URL_TURNERO + 'modulos')
+            .then(response => response.json())
+            .then(data => setModulos(data))
+            .catch(error => console.error('Error:', error));
+
+        // Cargar los turnos
+        fetch(API_URL_TURNERO + 'turnos')
+            .then(response => response.json())
+            .then(data => setListaTurnos(data))
+            .catch(error => console.error('Error:', error));
+    }, []);
 
     const [cajaAutenticada, setCajaAutenticada] = useState(null);
     const [estaAutenticado, setEstaAutenticado] = useState(false);
 
-    const handleRegistrarCaja = (caja) => {
-        setCajas([...cajas, caja]);
+    const handleRegistrarModulo = (modulo) => {
+        fetch(API_URL_TURNERO + "modulos", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(modulo),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Modulo creado: ', data);
+                // Luego de crear el modulo, puedes solicitar la lista actualizada de modulos
+                fetch('/api/modulos')
+                    .then(response => response.json())
+                    .then(data => setModulos(data));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
     const handleDeleteTurno = (turno) => {
@@ -42,93 +61,147 @@ function App() {
             prevTurnos.filter((t) => t.Turno !== turno.Turno)
         );
     };
-
     const handleBorrarCaja = (cajaNombre) => {
         if (
             window.confirm(
                 `¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`
             )
         ) {
-            setCajas((prevCajas) =>
-                prevCajas.filter((caja) => caja.nombre !== cajaNombre)
-            );
-            setListaTurnos((prevTurnos) =>
-                prevTurnos.filter((turno) => turno.Caja !== cajaNombre)
-            );
+            fetch(API_URL_TURNERO + "modulos/" + cajaNombre, {
+                method: 'DELETE',
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // Actualizar la UI solo si la operación de borrado en el servidor fue exitosa.
+                    setModulos((prevCajas) =>
+                        prevCajas.filter((caja) => caja.nombre !== cajaNombre)
+                    );
+                    setListaTurnos((prevTurnos) =>
+                        prevTurnos.filter((turno) => turno.Caja !== cajaNombre)
+                    );
+                })
+                .catch((error) => console.log(error));
         }
     };
-
     const solicitarTurno = (caja_nombre) => {
-        setListaTurnos((prevTurnos) => [
-            ...prevTurnos,
-            {
-                Caja: caja_nombre,
-                Turno: prevTurnos.length + 1,
-                Estado: ESTADO_PENDIENTE,
-                TiempoInicio: null,
-                TiempoFin: null,
+        const nuevoTurno = {
+            modulo: caja_nombre,
+            estado: ESTADO_PENDIENTE,
+            tiempo_inicio: null,
+            tiempo_fin: null,
+        };
+        return fetch(API_URL_TURNERO + 'turnos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             },
-        ]);
+            body: JSON.stringify(nuevoTurno),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Turno creado: ', data);
+                // Luego de crear el turno, puedes solicitar la lista actualizada de turnos
+                fetch(API_URL_TURNERO + 'turnos')
+                    .then(response => response.json())
+                    .then(data => setListaTurnos(data));
+                return data.turno; // Suponiendo que el servidor devuelve el turno creado, con su id
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
+
+
     const abrirTurno = (turno) => {
-        setListaTurnos((prevTurnos) => {
-            const updatedTurno = { ...turno, Estado: ESTADO_EN_PROCESO, TiempoInicio: Date.now() };
-            const filteredTurnos = prevTurnos.filter((t) => t.Turno !== turno.Turno);
-            return [updatedTurno, ...filteredTurnos];
-        });
+        fetch(API_URL_TURNERO + "turnos/" + turno.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...turno,
+                estado: 'abierto',  // Aquí
+                tiempo_inicio: new Date().toISOString()  // Y aquí
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Actualiza la lista de turnos con la información actualizada
+                setListaTurnos((prevTurnos) => {
+                    const updatedTurno = data; // Usa la respuesta del servidor
+                    const filteredTurnos = prevTurnos.filter((t) => t.Turno !== turno.Turno);
+                    return [updatedTurno, ...filteredTurnos];
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
 
     const cerrarTurno = (turno) => {
-        setListaTurnos((prevTurnos) =>
-            prevTurnos.map((t) =>
-                t.Turno === turno.Turno
-                    ? { ...t, Estado: ESTADO_TERMINADO, TiempoFin: Date.now() }
-                    : t
-            )
-        );
+        fetch(API_URL_TURNERO + "turnos/" + turno.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...turno,
+                estado: 'terminado',  // Aquí
+                tiempo_fin: new Date().toISOString()  // Y aquí
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Actualiza la lista de turnos con la información actualizada
+                setListaTurnos((prevTurnos) =>
+                    prevTurnos.map((t) =>
+                        t.Turno === turno.Turno
+                            ? data // Usa la respuesta del servidor
+                            : t
+                    )
+                );
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
+    const handleLogin = async (nombre, password) => {
+        try {
+            const response = await fetch(API_URL_TURNERO + 'login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre, password })
+            });
 
-    const handleLogin = (nombre, password) => {
-        const moduloEncontrado = cajas.find(caja => caja.nombre === nombre && caja.password === password);
+            if (!response.ok) {
+                console.log(nombre,password);
+                throw new Error('error');
+            }
 
-        if (moduloEncontrado) {
+            const moduloEncontrado = await response.json();
+
             setCajaAutenticada(moduloEncontrado);
-            setEstaAutenticado(true); // Ajusta el estado a true cuando el login es exitoso
+            setEstaAutenticado(true);
             console.log(`Inicio de sesión exitoso para: ${nombre}`);
-        } else {
-            console.log('Error: combinación de nombre y contraseña incorrecta');
+
+        } catch (error) {
+            console.log(error.message);
             // Aquí puedes manejar el error de inicio de sesión
         }
     };
-
     const handleLogout = () => {
         setCajaAutenticada(null);
         setEstaAutenticado(false);
         console.log('Sesión cerrada');
     };
 
-    useEffect(() => {
-        // Al montar el componente, intenta cargar los datos del localStorage.
-        const loadedTurnos = localStorage.getItem("turnos");
-        const loadedCajas = localStorage.getItem("cajas");
-
-        if (loadedTurnos) {
-            setListaTurnos(JSON.parse(loadedTurnos));
-        }
-
-        if (loadedCajas) {
-            setCajas(JSON.parse(loadedCajas));
-        }
-    }, []);
-
-    useEffect(() => {
-        // Cuando listaTurnos o cajas cambien, actualiza el localStorage.
-        localStorage.setItem("turnos", JSON.stringify(listaTurnos));
-        localStorage.setItem("cajas", JSON.stringify(cajas));
-    }, [listaTurnos, cajas]);
 
 
     return (
@@ -151,12 +224,12 @@ function App() {
                                         />
                                     }
                                 />
-                                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
-                                <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
+                                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarModulo} onBorrarCaja={handleBorrarCaja} cajas={modulos} />} />
+                                <Route path="/lista-cajas" element={<ListaDeCajas cajas={modulos} onBorrarCaja={handleBorrarCaja} />} />
                                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
                                 <Route path="/resetear-turnos" element={<ResetearTurnos />} />
-                                <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
-                                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} imagen="url-de-tu-imagen-o-video" logo="url-de-tu-logo" />} />
+                                <Route path="/solicitar-turno" element={<SolicitarTurno cajas={modulos} onSolicitarTurno={solicitarTurno} />} />
+                                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} />} />
                                 <Route path="/" element={<Menu />} /> {/* Página de inicio, por ejemplo. */}
                             </Routes>
                         </Router>

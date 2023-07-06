@@ -6,7 +6,6 @@ import Video from '../../assets/Constancia_Antecedentes_Penales.mp4';
 import LogoCorazon from '../../assets/logo corazonxdelante.png';
 import {useEffect} from "react";
 import {ESTADO_TERMINADO} from "../../ENV/constantes";
-
 const TurnViewer = ({ turnos }) => {
 
     useEffect(() => {
@@ -18,7 +17,7 @@ const TurnViewer = ({ turnos }) => {
         };
     }, []);
 
-    const turnosPendientes = turnos.filter(turno => turno.Estado !== ESTADO_TERMINADO);
+    const turnosPendientes = turnos.filter(turno => turno.estado !== ESTADO_TERMINADO);
 
     return (
             <Container className="turnViewer" style={{marginTop: '0%'}}>
@@ -29,15 +28,15 @@ const TurnViewer = ({ turnos }) => {
                                     <h2>Turno</h2>
                                 </Row>
                                 <Row >
-                                    <h1 style={{color : 'red', fontSize: '90px'}}> {turnosPendientes[0]?.Turno.toString().padStart(3, '0')}</h1>
+                                    <h1 style={{color : 'red', fontSize: '90px'}}> {turnosPendientes[0]?.turno.toString().padStart(3, '0')}</h1>
                                 </Row>
                             </Col>
                             <Col className="text-center">
                                 <Row>
-                                    <h2>Caja</h2>
+                                    <h2>Modulo</h2>
                                 </Row>
                                 <Row>
-                                    <h1 style={{color : 'red' ,  fontSize: '60px'}}>{turnos[0]?.Caja}</h1>
+                                    <h1 style={{color : 'red' ,  fontSize: '60px'}}>{turnosPendientes[0]?.modulo}</h1>
                                 </Row>
                             </Col>
                         </Row>
@@ -86,10 +85,10 @@ const TurnViewer = ({ turnos }) => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {turnosPendientes.slice(0,8).map((turno, index) => (
+                                        {turnosPendientes.slice(0,8).map((turnoPendiente, index) => (
                                             <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
-                                                <td>{turno.Turno.toString().padStart(3, '0')}</td>
-                                                <td>{turno.Caja}</td>
+                                                <td>{turnoPendiente.turno.toString().padStart(3, '0')}</td>
+                                                <td>{turnoPendiente.modulo}</td>
                                             </tr>
                                         ))}
                                         </tbody>

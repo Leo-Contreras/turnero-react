@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Alert, Card, Form, Button, Container} from 'react-bootstrap';
 
-const RegistrarCaja = ({  onRegistrarCaja}) => {
+const RegistrarCaja = ({  onRegistrarCaja  }) => {
   const [cajaNombre, setCajaNombre] = useState('');
   const [cajaPassword, setCajaPassword] = useState('');
   const [showAlert, setShowAlert] = useState(false);
