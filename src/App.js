@@ -12,11 +12,54 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
 import {API_URL_TURNERO, ESTADO_PENDIENTE} from "./ENV/constantes";
 
-
 function App() {
 
     const [modulos, setModulos] = useState([]);
+    const [cajaAutenticada, setCajaAutenticada] = useState(null);
+    const [estaAutenticado, setEstaAutenticado] = useState(false);
     const [listaTurnos, setListaTurnos] = useState([]);
+    const [ws, setWs] = useState(null);  // <-- Estado para el WebSocket
+
+    useEffect(() => {
+        // Crea un nuevo WebSocket.
+        const newWs = new WebSocket('ws://localhost:3000/ws');
+
+        // Configura el evento 'message' para actualizar los turnos y modulos cuando lleguen datos.
+        newWs.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            switch (data.type) {
+                case 'turnos':
+                    setListaTurnos(data.turnos);
+                    break;
+                case 'modulos':
+                    setModulos(data.modulos);
+                    break;
+                case 'modulo_eliminado':
+                    // Cuando se elimina un módulo, lo quitamos de la lista de módulos
+                    // y también quitamos todos los turnos asociados a este módulo.
+                    setModulos(prevModulos => prevModulos.filter(modulo => modulo.nombre !== data.modulo.nombre));
+                    setListaTurnos(prevTurnos => prevTurnos.filter(turno => turno.Caja !== data.modulo.nombre));
+                    break;
+                default:
+                    console.log(`Tipo de mensaje desconocido: ${data.type}`);
+            }
+        };
+
+        // Configura los otros eventos (opcional).
+        newWs.onclose = () => console.log('WebSocket cerrado');
+        newWs.onerror = (error) => console.log('Error en WebSocket:', error);
+
+        // Guarda la referencia al WebSocket.
+        setWs(newWs);
+
+        return () => {
+            // Cierra el WebSocket si el componente se desmonta.
+            newWs.close();
+        };
+    }, []);
+
+
+
 
     useEffect(() => {
         // Cargar los modulos
@@ -24,16 +67,9 @@ function App() {
             .then(response => response.json())
             .then(data => setModulos(data))
             .catch(error => console.error('Error:', error));
-
-        // Cargar los turnos
-        fetch(API_URL_TURNERO + 'turnos')
-            .then(response => response.json())
-            .then(data => setListaTurnos(data))
-            .catch(error => console.error('Error:', error));
     }, []);
 
-    const [cajaAutenticada, setCajaAutenticada] = useState(null);
-    const [estaAutenticado, setEstaAutenticado] = useState(false);
+
 
     const handleRegistrarModulo = (modulo) => {
         fetch(API_URL_TURNERO + "modulos", {
@@ -47,7 +83,7 @@ function App() {
             .then(data => {
                 console.log('Modulo creado: ', data);
                 // Luego de crear el modulo, puedes solicitar la lista actualizada de modulos
-                fetch('/api/modulos')
+                fetch(API_URL_TURNERO + 'modulos')
                     .then(response => response.json())
                     .then(data => setModulos(data));
             })
@@ -55,6 +91,7 @@ function App() {
                 console.error('Error:', error);
             });
     };
+
 
     const handleDeleteTurno = (turno) => {
         setListaTurnos((prevTurnos) =>
@@ -112,7 +149,6 @@ function App() {
                 console.error('Error:', error);
             });
     };
-
 
 
     const abrirTurno = (turno) => {
@@ -201,8 +237,6 @@ function App() {
         setEstaAutenticado(false);
         console.log('Sesión cerrada');
     };
-
-
 
     return (
         <div className="App">
