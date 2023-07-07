@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { collection, getDocs, doc, setDoc, deleteDoc , onSnapshot } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, deleteDoc , onSnapshot, updateDoc } from "firebase/firestore";
 import { firestore } from "./Componentes/Firebase/firebaseConfig"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from './paginas/Login/Login';
@@ -13,24 +13,13 @@ import Menu from "./paginas/Menu/Menu";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
 
-
-
-
 function App() {
 
     const [listaTurnos, setListaTurnos] = useState([
         { Caja: "MODULO 1", Turno: 1, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 2", Turno: 2, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 1", Turno: 3, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 2", Turno: 4, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
-        { Caja: "MODULO 1", Turno: 5, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
     ]);
 
-
     const [cajas, setCajas] = useState([
-        { nombre: "MODULO 1", password: "password1" },
-        { nombre: "MODULO 2", password: "password2" },
-        { nombre: "ADBC", password: "password3" },
     ]);
 
     const [cajaAutenticada, setCajaAutenticada] = useState(null);
@@ -75,13 +64,22 @@ function App() {
             });
             setListaTurnos(turnos);
         });
-
         // Remember to unsubscribe from your realtime listener on unmount
         return () => unsubscribe();
     }, []);
 
+    const handleAtenderTurno = async (turno) => {
+        // Aquí solo estamos actualizando el estado del turno a "ATENDIENDO"
+        try {
+            const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
+            await updateDoc(turnoRef, { Estado: 'ATENDIENDO' });
+        } catch (error) {
+            console.error("Error updating document: ", error);
+        }
 
-
+        // Aquí estamos actualizando el estado del turno en el estado de la aplicación de React
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO' } : t));
+    };
 
     const handleRegistrarCaja = async (caja) => {
         setCajas(prevCajas => [...prevCajas, caja]);
@@ -92,20 +90,6 @@ function App() {
             console.error("Error writing document: ", error);
         }
     };
-
-
-
-    const handleDeleteTurno = async (turno) => {
-        setListaTurnos((prevTurnos) => prevTurnos.filter((t) => t.id !== turno.id));
-
-        try {
-            await deleteDoc(doc(collection(firestore, 'turnos'), turno.id));
-        } catch (error) {
-            console.error("Error deleting document: ", error);
-        }
-    };
-
-
     const handleBorrarCaja = async (cajaNombre) => {
         if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
             // Primero, eliminar el módulo.
@@ -116,7 +100,6 @@ function App() {
             } catch (error) {
                 console.error("Error deleting document: ", error);
             }
-
             // Segundo, obtener todos los turnos para este módulo.
             const turnosDelModulo = listaTurnos.filter(turno => turno.Caja === cajaNombre);
 
@@ -132,13 +115,9 @@ function App() {
             });
         }
     };
-
-
-
-
     const solicitarTurno = async (caja_nombre) => {
         const id = Date.now().toString();
-        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1 };
+        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1, estado: "EN ESPERA" };
         setListaTurnos(prevTurnos => [...prevTurnos, newTurno]);
 
         try {
@@ -168,33 +147,25 @@ function App() {
         console.log('Sesión cerrada');
     };
 
-    useEffect(() => {
-        // Al montar el componente, intenta cargar los datos del localStorage.
-        const loadedTurnos = localStorage.getItem("turnos");
-        const loadedCajas = localStorage.getItem("cajas");
-
-        if (loadedTurnos) {
-            setListaTurnos(JSON.parse(loadedTurnos));
+    const handleFinalizarTurno = async (turno) => {
+        // Aquí solo estamos actualizando el estado del turno a "FINALIZADO"
+        try {
+            const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
+            await updateDoc(turnoRef, { Estado: 'FINALIZADO' });
+        } catch (error) {
+            console.error("Error updating document: ", error);
         }
 
-        if (loadedCajas) {
-            setCajas(JSON.parse(loadedCajas));
-        }
-    }, []);
-
-    useEffect(() => {
-        // Cuando listaTurnos o cajas cambien, actualiza el localStorage.
-        localStorage.setItem("turnos", JSON.stringify(listaTurnos));
-        localStorage.setItem("cajas", JSON.stringify(cajas));
-    }, [listaTurnos, cajas]);
-
+        // Aquí estamos actualizando el estado del turno en el estado de la aplicación de React
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'FINALIZADO' } : t));
+    };
 
     return (
         <div className="App">
                 <div className="MainContent">
                         <Router>
                             <Routes>
-                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onDelete={handleDeleteTurno}/>} />
+                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onFinalizar={handleFinalizarTurno} onAtender={handleAtenderTurno}/>} />
                                 <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
                                 <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
                                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
