@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Alert, Card, Form, Button, Container} from 'react-bootstrap';
 
-const RegistrarCaja = ({  onRegistrarCaja}) => {
+const RegistrarCaja = ({  onRegistrarCaja , cajas}) => {
   const [cajaNombre, setCajaNombre] = useState('');
   const [cajaPassword, setCajaPassword] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -16,12 +16,19 @@ const RegistrarCaja = ({  onRegistrarCaja}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onRegistrarCaja({ nombre: cajaNombre, password: cajaPassword });
-    setCajaNombre(''); // Reinicia el valor del input después del registro
-    setCajaPassword(''); // Reinicia el valor del input después del registro
-    setShowAlert(true); // Muestra la alerta
-  };
 
+    // Verificar si el nombre del módulo ya existe
+    const moduloExistente = cajas.find((caja) => caja.nombre === cajaNombre);
+    if (moduloExistente) {
+      alert('El nombre del módulo ya está registrado. Por favor, elija otro nombre.');
+      return;
+    }
+
+    onRegistrarCaja({ nombre: cajaNombre, password: cajaPassword });
+    setCajaNombre('');
+    setCajaPassword('');
+    setShowAlert(true);
+  };
   return (
       <div>
         <Card style={{ width: '18rem', height: '24rem', margin: 'auto', marginTop: '10%' }}>

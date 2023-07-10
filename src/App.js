@@ -24,6 +24,7 @@ function App() {
 
     const [cajaAutenticada, setCajaAutenticada] = useState(null);
     const [estaAutenticado, setEstaAutenticado] = useState(false);
+    const [turnoActual, setTurnoActual] = useState(null);  // Almacena el turno actual
 
 
     useEffect(() => {
@@ -36,7 +37,6 @@ function App() {
             const turnosCollection = await getDocs(collection(firestore, 'turnos'));
             setListaTurnos(turnosCollection.docs.map(doc => doc.data()));
         };
-
         fetchCajas();
         fetchTurnos();
     }, []);
@@ -68,18 +68,7 @@ function App() {
         return () => unsubscribe();
     }, []);
 
-    const handleAtenderTurno = async (turno) => {
-        // Aquí solo estamos actualizando el estado del turno a "ATENDIENDO"
-        try {
-            const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
-            await updateDoc(turnoRef, { Estado: 'ATENDIENDO' });
-        } catch (error) {
-            console.error("Error updating document: ", error);
-        }
 
-        // Aquí estamos actualizando el estado del turno en el estado de la aplicación de React
-        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO' } : t));
-    };
 
     const handleRegistrarCaja = async (caja) => {
         setCajas(prevCajas => [...prevCajas, caja]);
@@ -117,7 +106,7 @@ function App() {
     };
     const solicitarTurno = async (caja_nombre) => {
         const id = Date.now().toString();
-        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1, estado: "EN ESPERA" };
+        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1, estado: "EN ESPERA" ,TiempoFin: null , TiempoInicio: null};
         setListaTurnos(prevTurnos => [...prevTurnos, newTurno]);
 
         try {
@@ -147,17 +136,41 @@ function App() {
         console.log('Sesión cerrada');
     };
 
-    const handleFinalizarTurno = async (turno) => {
-        // Aquí solo estamos actualizando el estado del turno a "FINALIZADO"
+    const calculateDuration = (startTime, endTime) => {
+        const duration = endTime.getTime() - startTime.getTime();
+        const hours = Math.floor(duration / 3600000);
+        const minutes = Math.floor((duration % 3600000) / 60000);
+        const seconds = Math.floor(((duration % 3600000) % 60000) / 1000);
+        return `${hours}h ${minutes}m ${seconds}s`;
+    };
+
+    const handleAtenderTurno = async (turno) => {
+        const startTime = new Date();
+
         try {
             const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
-            await updateDoc(turnoRef, { Estado: 'FINALIZADO' });
+            await updateDoc(turnoRef, { Estado: 'ATENDIENDO', TiempoInicio: startTime });
+            setTurnoActual(turno)
+        } catch (error) {
+            console.error("Error al atender turno: ", error);
+        }
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO', TiempoInicio: startTime } : t));
+
+        console.log(turnoActual)
+        console.log(turno)
+    };
+
+    const handleFinalizarTurno = async (turno) => {
+        const endTime = new Date();
+        const startTime = new Date(turno.TiempoInicio);
+        const duration = calculateDuration(startTime, endTime);
+        try {
+            const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
+            await updateDoc(turnoRef, { Estado: 'FINALIZADO', TiempoFin: endTime, Duracion: duration });
         } catch (error) {
             console.error("Error updating document: ", error);
         }
-
-        // Aquí estamos actualizando el estado del turno en el estado de la aplicación de React
-        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'FINALIZADO' } : t));
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'FINALIZADO', TiempoFin: endTime, Duracion: duration } : t));
     };
 
     return (
@@ -166,13 +179,13 @@ function App() {
                         <Router>
                             <Routes>
                                 <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onFinalizar={handleFinalizarTurno} onAtender={handleAtenderTurno}/>} />
-                                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} onBorrarCaja={handleBorrarCaja} cajas={cajas} />} />
-                                <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} />} />
+                                <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} cajas={cajas} />} />
+                                <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} ListaTurnos={listaTurnos}/>} />
                                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />
                                 <Route path="/resetear-turnos" element={<ResetearTurnos />} />
                                 <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
-                                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} imagen="url-de-tu-imagen-o-video" logo="url-de-tu-logo" />} />
-                                <Route path="/" element={<Menu />} /> {/* Página de inicio, por ejemplo. */}
+                                <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} turnoActual={turnoActual}/>} />
+                                <Route path="/" element={<Menu />} />
                             </Routes>
                         </Router>
                 </div>

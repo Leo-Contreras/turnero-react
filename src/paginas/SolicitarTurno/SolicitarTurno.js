@@ -60,10 +60,10 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
     return (
         <Container className="d-flex justify-content-center align-items-center vh-100">
             <div className="text-center">
-                <h1>Selecciona la caja para solicitar turno</h1>
+                <h1>Selecciona el Modulo para solicitar turno</h1>
                 {cajas.length === 0 ? (
                     <Alert variant="warning">
-                        No hay ninguna caja registrada.
+                        No hay ningun Modulo registrado.
                     </Alert>
                 ) : (
                     <Row className="justify-content-md-center">

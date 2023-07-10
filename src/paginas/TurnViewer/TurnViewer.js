@@ -6,20 +6,16 @@ import Video from '../../assets/Constancia_Antecedentes_Penales.mp4';
 import LogoCorazon from '../../assets/logo corazonxdelante.png';
 import {useEffect} from "react";
 
-const TurnViewer = ({ turnos }) => {
+const TurnViewer = ({ turnos , turnoActual }) => {
     // Al montar y desmontar el componente, cambia el color de fondo del body
     useEffect(() => {
-        // Guarda el color de fondo original del body
         const originalBackgroundColor = document.body.style.backgroundColor;
-
-        // Cambia el color de fondo del body al montar el componente
+        console.log(turnoActual);
         document.body.style.backgroundColor = '#6a1232';
-
-        // Restaura el color de fondo original del body al desmontar el componente
         return () => {
             document.body.style.backgroundColor = originalBackgroundColor;
         };
-    }, []);  // El arreglo vacío indica que este efecto solo se ejecuta al montar y desmontar el componente
+    }, [turnoActual]);
 
 
     return (
@@ -32,15 +28,17 @@ const TurnViewer = ({ turnos }) => {
                                     <h2>Turno</h2>
                                 </Row>
                                 <Row >
-                                  <h1 style={{color : 'red', fontSize: '90px'}}> {turnos[0]?.Turno.toString().padStart(3, '0')}</h1>
+                                  <h1 style={{color : 'red', fontSize: '90px'}}>
+                                      {turnoActual ? turnoActual.Turno.toString().padStart(3, '0') : '---'}
+                                  </h1>
                                 </Row>
                             </Col>
                             <Col className="text-center">
                                 <Row>
-                                    <h2>Caja</h2>
+                                    <h2>Modulo</h2>
                                 </Row>
                                 <Row>
-                                    <h1 style={{color : 'red' ,  fontSize: '60px'}}>{turnos[0]?.Caja}</h1>
+                                    <h1 style={{color : 'red' ,  fontSize: '60px'}}>{turnoActual ? turnoActual.Caja : '---'}</h1>
                                 </Row>
                             </Col>
                         </Row>
@@ -85,7 +83,7 @@ const TurnViewer = ({ turnos }) => {
                                         <thead>
                                         <tr>
                                             <th>Turno</th>
-                                            <th>Caja</th>
+                                            <th>Modulo</th>
                                         </tr>
                                         </thead>
                                         <tbody>
