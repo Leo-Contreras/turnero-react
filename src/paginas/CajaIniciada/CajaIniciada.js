@@ -1,7 +1,8 @@
 import React from 'react'
 import {Container, Table} from "react-bootstrap";
-import { CSVLink } from "react-csv"; // Importar CSVLink de react-csv
-const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender }) => {
+import { CSVLink } from "react-csv";
+import {MdCancel} from "react-icons/md"; // Importar CSVLink de react-csv
+const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender, onCancelar }) => {
 
     const turnosDelModulo = cajaAutenticada ? listaTurnos.filter(turno => turno.Caja === cajaAutenticada.nombre) : [];
     const turnosPendientes = turnosDelModulo.filter(turno => turno.Estado !== 'FINALIZADO' && turno.Estado !== 'CANCELADO');
@@ -29,6 +30,13 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender }) 
         return nuevoTurno;
     });
 
+    const handleCancelar = (turno) => {
+        const confirmCancel = window.confirm(`Estás seguro que deseas Cancelar el turno ${turno.Turno}?`);  // ventana de confirmación
+        if (confirmCancel) {
+            onCancelar(turno);
+        }
+    };
+
     return (
         <Container style={{ marginTop: '10%' }}>
             <h1>Lista de turnos Modulo: {cajaAutenticada.nombre}</h1>
@@ -51,7 +59,11 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender }) 
                             {turno.Estado === 'ATENDIENDO' ? (
                                 <button onClick={() => handleDelete(turno)}>Terminar</button>
                             ) : (
-                                <button onClick={() => handleAtender(turno)}>Atender</button>
+                                <>
+                                    <button onClick={() => handleAtender(turno)}>Atender</button>
+                                    {turno.Estado !== 'CANCELADO' &&<MdCancel size={30} color="red" onClick={() => handleCancelar(turno)} />
+                                    }
+                                </>
                             )}
                         </td>
                     </tr>

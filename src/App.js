@@ -106,7 +106,7 @@ function App() {
     };
     const solicitarTurno = async (caja_nombre) => {
         const id = Date.now().toString();
-        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1, estado: "EN ESPERA" ,TiempoFin: null , TiempoInicio: null};
+        const newTurno = { id, Caja: caja_nombre, Turno: listaTurnos.length + 1, Estado: "EN ESPERA" ,TiempoFin: null , TiempoInicio: null};
         setListaTurnos(prevTurnos => [...prevTurnos, newTurno]);
 
         try {
@@ -173,12 +173,23 @@ function App() {
         setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'FINALIZADO', TiempoFin: endTime, Duracion: duration } : t));
     };
 
+    const handleCancelarTurno = async (turno) => {
+        try {
+            const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
+            await updateDoc(turnoRef, { Estado: 'CANCELADO'});
+        } catch (error) {
+            console.error("Error al cancelar el turno: ", error);
+        }
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'CANCELADO'} : t));
+    };
+
+
     return (
         <div className="App">
                 <div className="MainContent">
                         <Router>
                             <Routes>
-                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onFinalizar={handleFinalizarTurno} onAtender={handleAtenderTurno}/>} />
+                                <Route path="/login" element={<Login onLogin={handleLogin} onLogout={handleLogout} estaAutenticado={estaAutenticado} cajaAutenticada={cajaAutenticada} listaTurnos={listaTurnos} onFinalizar={handleFinalizarTurno} onAtender={handleAtenderTurno} onCancelar={handleCancelarTurno}/>} />
                                 <Route path="/registrar-caja" element={<RegistroCaja onRegistrarCaja={handleRegistrarCaja} cajas={cajas} />} />
                                 <Route path="/lista-cajas" element={<ListaDeCajas cajas={cajas} onBorrarCaja={handleBorrarCaja} ListaTurnos={listaTurnos}/>} />
                                 <Route path="/informacion-empresa" element={<InformacionEmpresa />} />

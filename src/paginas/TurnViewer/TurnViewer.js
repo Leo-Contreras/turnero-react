@@ -87,13 +87,14 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {turnos.slice(0,8).map((turno, index) => (
+                                        {turnos.filter(turno => turno.Estado === "EN ESPERA").slice(0,8).map((turno, index) => (
                                             <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
                                                 <td>{turno.Turno.toString().padStart(3, '0')}</td>
                                                 <td>{turno.Caja}</td>
                                             </tr>
                                         ))}
                                         </tbody>
+
                                     </Table>
 
                                 </div>
