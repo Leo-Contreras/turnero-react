@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { collection, getDocs, doc, setDoc, deleteDoc , onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, deleteDoc , onSnapshot, updateDoc  } from "firebase/firestore";
 import { firestore } from "./Componentes/Firebase/firebaseConfig"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from './paginas/Login/Login';
@@ -68,6 +68,20 @@ function App() {
         return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+        const turnoActualRef = doc(collection(firestore, 'turnoActual'), 'turnoActual');
+
+        const unsubscribe = onSnapshot(turnoActualRef, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+                setTurnoActual(docSnapshot.data());
+            }
+        });
+
+        // Recuerda des-suscribirte de tu observador en tiempo real al desmontar
+        return () => unsubscribe();
+    }, []);
+
+
 
 
     const handleRegistrarCaja = async (caja) => {
@@ -115,8 +129,6 @@ function App() {
             console.error("Error writing document: ", error);
         }
     };
-
-
     const handleLogin = (nombre, password) => {
         const moduloEncontrado = cajas.find(caja => caja.nombre === nombre && caja.password === password);
 
@@ -150,14 +162,27 @@ function App() {
         try {
             const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
             await updateDoc(turnoRef, { Estado: 'ATENDIENDO', TiempoInicio: startTime });
-            setTurnoActual(turno)
+
+            // Crea una referencia al documento donde se guardará turnoActual
+            const turnoActualRef = doc(collection(firestore, 'turnoActual'), 'turnoActual');
+            // Actualiza o crea el documento con el nuevo turno actual
+            await setDoc(turnoActualRef, turno);
+
+            // Establece el observador en el turno actual
+            const unsubscribe = onSnapshot(turnoRef, (doc) => {
+                if (doc.data().Estado === 'FINALIZADO') {
+                    setTurnoActual(null);
+                    unsubscribe();  // Deja de escuchar cambios en este turno
+                } else {
+                    setTurnoActual({ ...doc.data(), id: doc.id });  // Actualiza el turnoActual con los nuevos datos
+                }
+            });
+
         } catch (error) {
             console.error("Error al atender turno: ", error);
         }
-        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO', TiempoInicio: startTime } : t));
 
-        console.log(turnoActual)
-        console.log(turno)
+        setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO', TiempoInicio: startTime } : t));
     };
 
     const handleFinalizarTurno = async (turno) => {
@@ -167,6 +192,11 @@ function App() {
         try {
             const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
             await updateDoc(turnoRef, { Estado: 'FINALIZADO', TiempoFin: endTime, Duracion: duration });
+
+            // Aquí estamos actualizando también el turnoActual
+            const turnoActualRef = doc(collection(firestore, 'turnoActual'), 'turnoActual');
+            await updateDoc(turnoActualRef, { Estado: 'FINALIZADO', TiempoFin: endTime, Duracion: duration });
+
         } catch (error) {
             console.error("Error updating document: ", error);
         }
@@ -182,7 +212,6 @@ function App() {
         }
         setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'CANCELADO'} : t));
     };
-
 
     return (
         <div className="App">

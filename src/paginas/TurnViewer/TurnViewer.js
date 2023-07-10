@@ -10,12 +10,12 @@ const TurnViewer = ({ turnos , turnoActual }) => {
     // Al montar y desmontar el componente, cambia el color de fondo del body
     useEffect(() => {
         const originalBackgroundColor = document.body.style.backgroundColor;
-        console.log(turnoActual);
         document.body.style.backgroundColor = '#6a1232';
         return () => {
             document.body.style.backgroundColor = originalBackgroundColor;
         };
     }, [turnoActual]);
+
 
 
     return (
