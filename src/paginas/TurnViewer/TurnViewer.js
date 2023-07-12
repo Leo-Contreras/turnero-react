@@ -82,7 +82,7 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                                 </Row>
                                 <Row>
                                     <h1 style={{color : 'white', fontSize: '90px'}}>
-                                        {turnoActual ? turnoActual.Turno.toString().padStart(3, '0') : '---'}
+                                        {turnoActual ? turnoActual.Turno.toString().slice(0,11).padStart(3, '0') : '---'}
                                     </h1>
                                 </Row>
                             </Col>
@@ -100,7 +100,7 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                     </Row>
                     {/* Segundo renglón (70%) */}
                     <Row style={{height: '70%'}}>
-                     <Col>
+                     <Col md={12}>
                          <Table
                              className="transparent-table tabla-aumentada"
                              style={{ backgroundImage: `url(${Fondo})` }}
@@ -137,8 +137,8 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                 </Col>
             </Row>
             <Row>
-                <Col md={4}>
-                    <Container className="d-flex align-items-center ">
+                <Col md={12}>
+                    <Container className="d-flex align-items-center justify-content-end">
                         <div>
                             <label className="btn btn-outline-dark btn-sm m-1">
                                 Upload Image <input type="file" onChange={handleImageUpload} hidden />
