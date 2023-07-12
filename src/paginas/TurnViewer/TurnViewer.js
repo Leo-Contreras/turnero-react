@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Col, Container, Row, Table} from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faVolumeUp, faVolumeMute } from '@fortawesome/free-solid-svg-icons'
 import './TurnViewer.scss'
 import Image from '../../assets/Img/logo adbc.png';
 import Fondo from '../../assets/Img/fondo_blanco_gris.jpeg';
@@ -98,26 +100,28 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                     </Row>
                     {/* Segundo renglón (70%) */}
                     <Row style={{height: '70%'}}>
-                        <Table
-                            className="transparent-table tabla-aumentada"
-                            style={{ backgroundImage: `url(${Fondo})` }}
-                        >
-                            <thead>
-                            <tr>
-                                <th className="text-center">TURNO</th>
-                                <th className="text-center">MODULO</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {turnos.filter(turno => turno.Estado === "EN ESPERA").slice(0,15).map((turno, index) => (
-                                <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
-                                    <td className="text-center">{turno.Turno.toString().padStart(3, '0')}</td>
-                                    <td className="text-center">{turno.Caja}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </Table>
+                     <Col>
+                         <Table
+                             className="transparent-table tabla-aumentada"
+                             style={{ backgroundImage: `url(${Fondo})` }}
+                         >
+                             <thead>
+                             <tr>
+                                 <th className="text-center">TURNO</th>
+                                 <th className="text-center">MODULO</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             {turnos.filter(turno => turno.Estado === "EN ESPERA").slice(0,12).map((turno, index) => (
+                                 <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
+                                     <td className="text-center">{turno.Turno.toString().padStart(3, '0')}</td>
+                                     <td className="text-center">{turno.Caja}</td>
+                                 </tr>
+                             ))}
+                             </tbody>
+                         </Table>
 
+                     </Col>
                     </Row>
                 </Col>
                 {/* Columna de 66% */}
@@ -132,19 +136,23 @@ const TurnViewer = ({ turnos , turnoActual }) => {
 
                 </Col>
             </Row>
-            <Row className="">
-                <Container>
-                    <input type="file" onChange={handleImageUpload} />
-                    {/*  <select onChange={handleImageSelect}>
-                        <option value={cactus_fondo}>Cactus</option>
-                         Aquí puedes agregar tus otras dos imágenes predeterminadas
+            <Row>
+                <Col md={4}>
+                    <Container className="d-flex align-items-center ">
+                        <div>
+                            <label className="btn btn-outline-dark btn-sm m-1">
+                                Upload Image <input type="file" onChange={handleImageUpload} hidden />
+                            </label>
+                        </div>
 
-                    </select> */}
-                    <button onClick={toggleSound}>
-                        {soundEnabled ? 'Disable Sound' : 'Enable Sound'}
-                    </button>
+                        <div>
+                            <button className={`btn btn-outline-dark btn-sm m-1 ${soundEnabled ? "active" : ""}`} onClick={toggleSound}>
+                                <FontAwesomeIcon icon={soundEnabled ? faVolumeUp : faVolumeMute} /> Sound
+                            </button>
+                        </div>
+                    </Container>
+                </Col>
 
-                </Container>
 
             </Row>
         </>
