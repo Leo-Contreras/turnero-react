@@ -1,14 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Col, Container, Row, Table} from 'react-bootstrap';
 import './TurnViewer.scss'
-import Image from '../../assets/logo adbc.png';
-import Fondo from '../../assets/fondo_blanco_gris.jpeg';
-import LogoCorazon from '../../assets/logo corazonxdelante.png';
-import cactus_fondo from '../../assets/cactus.jpg';
+import Image from '../../assets/Img/logo adbc.png';
+import Fondo from '../../assets/Img/fondo_blanco_gris.jpeg';
+import LogoCorazon from '../../assets/Img/logo corazonxdelante.png';
+import cactus_fondo from '../../assets/Img/cactus.jpg';
+import NotificacionSound from '../../assets/audio/mixkit-software-interface-back-2575.wav';
 
 const TurnViewer = ({ turnos , turnoActual }) => {
 
     const [backgroundImage, setBackgroundImage] = useState(localStorage.getItem('backgroundImage') || cactus_fondo);
+
+    const playNotificationSound = useCallback(() => {
+        const notificacion = new Audio(NotificacionSound);
+        notificacion.play();
+    }, []);
+
+    const [soundEnabled, setSoundEnabled] = useState(false);
+
+    const toggleSound = () => {
+        setSoundEnabled(!soundEnabled);
+    };
+
+    useEffect(() => {
+        if (soundEnabled && turnoActual) {
+            playNotificationSound();
+        }
+    }, [turnoActual, soundEnabled, playNotificationSound]);
+
 
     useEffect(() => {
         // Guarda el estilo de fondo actual del cuerpo
@@ -30,6 +49,8 @@ const TurnViewer = ({ turnos , turnoActual }) => {
     }, [backgroundImage]);
 
     const handleImageUpload = (e) => {
+        if(e.target.files.length === 0) return; // Esta línea se asegura de que hay un archivo seleccionado.
+
         const file = e.target.files[0];
         const reader = new FileReader();
 
@@ -39,7 +60,6 @@ const TurnViewer = ({ turnos , turnoActual }) => {
 
         reader.readAsDataURL(file);
     };
-
     // eslint-disable-next-line no-unused-vars
     const handleImageSelect = (e) => {
         setBackgroundImage(e.target.value);
@@ -52,24 +72,24 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                 <Col className="p-3" md={4} style={{marginLeft: '3%'}}>
                     {/* Primer renglón (30%) */}
 
-                    <Row className="align-items-center bg-dark text-white p-3 mb-3" style={{border: '1px solid white', height: '30%'}}>
+                    <Row className="align-items-center custom-bg-dark text-white p-3 mb-3" style={{border: '5px solid #b17a45', minHeight: '40%'}}>
                         <Container>
                             <Col className="text-center">
                                 <Row>
-                                    <h2>Turno</h2>
+                                    <h2>TURNO</h2>
                                 </Row>
                                 <Row>
-                                    <h1 style={{color : 'red', fontSize: '90px'}}>
+                                    <h1 style={{color : 'white', fontSize: '90px'}}>
                                         {turnoActual ? turnoActual.Turno.toString().padStart(3, '0') : '---'}
                                     </h1>
                                 </Row>
                             </Col>
                             <Col className="text-center">
                                 <Row>
-                                    <h2>Modulo</h2>
+                                    <h2>MODULO</h2>
                                 </Row>
                                 <Row>
-                                    <h1 style={{color : 'red' ,  fontSize: '60px'}}>{turnoActual ? turnoActual.Caja : '---'}</h1>
+                                    <h1 style={{color : 'white' ,  fontSize: '60px'}}>{turnoActual ? turnoActual.Caja : '---'}</h1>
                                 </Row>
 
                             </Col>
@@ -84,12 +104,12 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                         >
                             <thead>
                             <tr>
-                                <th className="text-center">Turno</th>
-                                <th className="text-center">Modulo</th>
+                                <th className="text-center">TURNO</th>
+                                <th className="text-center">MODULO</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {turnos.filter(turno => turno.Estado === "EN ESPERA").slice(0,8).map((turno, index) => (
+                            {turnos.filter(turno => turno.Estado === "EN ESPERA").slice(0,15).map((turno, index) => (
                                 <tr key={index} style={index === 0 ? {color: "#6a1232"} : {}}>
                                     <td className="text-center">{turno.Turno.toString().padStart(3, '0')}</td>
                                     <td className="text-center">{turno.Caja}</td>
@@ -101,10 +121,10 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                     </Row>
                 </Col>
                 {/* Columna de 66% */}
-                <Col md={6}>
+                <Col md={7}>
                     <Container>
-                        <Col md={8} className="d-flex align-items-center justify-content-end">
-                            <img src={Image} alt="Logo adbc" className="img-fluid m-2" style={{maxWidth: '100%'}} />
+                        <Col md={6} className="d-flex align-items-center justify-content-end">
+                            <img src={Image} alt="Logo Agencia Digital" className="img-fluid" style={{maxWidth: '100%'}} />
                             <img src={LogoCorazon} alt="Logo Corazon" className="img-fluid m-2" style={{maxWidth: '20%'}} />
                         </Col>
 
@@ -118,7 +138,12 @@ const TurnViewer = ({ turnos , turnoActual }) => {
                     {/*  <select onChange={handleImageSelect}>
                         <option value={cactus_fondo}>Cactus</option>
                          Aquí puedes agregar tus otras dos imágenes predeterminadas
+
                     </select> */}
+                    <button onClick={toggleSound}>
+                        {soundEnabled ? 'Disable Sound' : 'Enable Sound'}
+                    </button>
+
                 </Container>
 
             </Row>

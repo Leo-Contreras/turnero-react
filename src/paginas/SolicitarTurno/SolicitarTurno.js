@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { Container, Alert, Row, Col, Button} from 'react-bootstrap';
-import Logo from '../../assets/logo guinda bc.png'
+import Logo from '../../assets/Img/logo guinda bc.png'
 import './SolicitarTurno.css'
 
 
@@ -16,9 +16,12 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
         const boxName = caja.nombre;
         const turnName = `${formattedTurnNumber}`;
 
+        // Generar la fecha y hora actual
+        const date = new Date();
+        const dateTimeString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 
         // Generar el código QR
-        const qrCodeText = `Turno: ${turnName}, Caja: ${boxName}`;
+        const qrCodeText = `Turno: ${turnName}, Modulo: ${boxName}`;
         const qrCodeDataURL = await QRCode.toDataURL(qrCodeText);
 
         // Generar el PDF
@@ -31,7 +34,7 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
         const yOffset = (pageHeight - contentHeight) / 2;
 
         const text1 = `Turno: ${turnName}`;
-        const text2 = `Caja: ${boxName}`;
+        const text2 = `Modulo: ${boxName}`;
         const xOffset1 = (pageWidth - pdfDoc.getStringUnitWidth(text1) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
         const xOffset2 = (pageWidth - pdfDoc.getStringUnitWidth(text2) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
         let logoDataUrl = Logo;
@@ -51,8 +54,11 @@ const SolicitarTurno = ({ cajas , onSolicitarTurno, listaTurnos  }) => {
             pdfDoc.text(text1, xOffset1 - 20, yOffset);
             pdfDoc.text(text2, xOffset2 - 20, 20 + yOffset);
             pdfDoc.addImage(qrCodeDataURL, 'JPEG', (pageWidth / 2) - 25, 30 + yOffset, 70, 60); //Centrado horizontalmente, asumiendo que el tamaño de la imagen es 50
-            pdfDoc.text("Revalida la tarjeta de", 40, 110 + yOffset);
-            pdfDoc.text("Circulación", 65, 130 + yOffset);
+
+            // Añadir la fecha y hora al documento PDF
+            const xOffsetDateTime = (pageWidth - pdfDoc.getStringUnitWidth(dateTimeString) * pdfDoc.internal.getFontSize() / pdfDoc.internal.scaleFactor) / 2;
+            pdfDoc.text(dateTimeString, xOffsetDateTime, 130 + yOffset);
+
             pdfDoc.save(`Turno_${turnName}.pdf`); // usamos el número de turno formateado en el nombre del archivo PDF
         };
     }

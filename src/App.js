@@ -15,9 +15,7 @@ import './custom.scss';
 
 function App() {
 
-    const [listaTurnos, setListaTurnos] = useState([
-        { Caja: "MODULO 1", Turno: 1, Estado: "pendiente", TiempoInicio: null, TiempoFin: null },
-    ]);
+    const [listaTurnos, setListaTurnos] = useState([]);
 
     const [cajas, setCajas] = useState([
     ]);

@@ -7,7 +7,7 @@ import PendingTurns from "./Componentes/PendingTurns";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jsPDF } from "jspdf";
 import QRCode from 'qrcode';
-import Logo from "./assets/logo guinda bc.png";
+import Logo from "./assets/Img/logo guinda bc.png";
 
 // Agrega la importación de tu logo aquí
 

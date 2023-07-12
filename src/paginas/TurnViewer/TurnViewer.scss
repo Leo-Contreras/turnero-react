@@ -1,10 +1,15 @@
 
-.bg-gold {
-  background-color: #D4AF37;
-}
 
 .tabla-aumentada {
   font-size: 18px;  /* Ajusta este valor según tus necesidades */
+  border-radius: 16px; /* Esto hará las esquinas de la tabla redondeadas */
+  overflow: hidden; /* Esto es necesario para que los bordes de la tabla se muestren correctamente */
+}
+
+.custom-bg-dark {
+  border-radius: 16px; /* Esto hará las esquinas del contenedor redondeadas */
+  background-color: #b17a45  !important;
+  color: white;
 }
 
 

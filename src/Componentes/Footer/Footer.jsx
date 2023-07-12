@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import LogoADBC from '../../assets/logo_BC_identidad_blanco@4x.png'
+import LogoADBC from '../../assets/Img/logo_BC_identidad_blanco@4x.png'
 
 const Footer = () => {
 	return (
