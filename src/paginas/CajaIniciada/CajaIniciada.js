@@ -12,8 +12,8 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender, on
             onFinalizar(turno);
         }
     };
-    const handleAtender = (turno) => {
-        onAtender(turno);
+    const handleAtender = (turno , cajaAutenticada) => {
+        onAtender(turno , cajaAutenticada);
     };
 
     const dataParaExportar = turnosDelModulo.map(turno => {
@@ -60,7 +60,7 @@ const CajaIniciada = ({ listaTurnos, cajaAutenticada, onFinalizar, onAtender, on
                                 <button onClick={() => handleDelete(turno)}>Terminar</button>
                             ) : (
                                 <>
-                                    <button onClick={() => handleAtender(turno)}>Atender</button>
+                                    <button onClick={() => handleAtender(turno , cajaAutenticada)}>Atender</button>
                                     {turno.Estado !== 'CANCELADO' &&<MdCancel size={30} color="red" onClick={() => handleCancelar(turno)} />
                                     }
                                 </>

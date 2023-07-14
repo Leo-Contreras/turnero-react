@@ -24,7 +24,7 @@ const RegistrarCaja = ({  onRegistrarCaja , cajas}) => {
       return;
     }
 
-    onRegistrarCaja({ nombre: cajaNombre, password: cajaPassword });
+    onRegistrarCaja({ nombre: cajaNombre, password: cajaPassword , turnoActual: null });
     setCajaNombre('');
     setCajaPassword('');
     setShowAlert(true);

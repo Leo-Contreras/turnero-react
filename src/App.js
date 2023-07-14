@@ -12,14 +12,14 @@ import TurnViewer from "./paginas/TurnViewer/TurnViewer";
 import Menu from "./paginas/Menu/Menu";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
+import VistaTurnero from "./paginas/VistaTurnero/VistaTurnero";
+import RegistrarUsuario from "./paginas/RegistrarUsuario/RegistrarUsuario";
 
 function App() {
 
     const [listaTurnos, setListaTurnos] = useState([]);
-
-    const [cajas, setCajas] = useState([
-    ]);
-
+    const [cajas, setCajas] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
     const [cajaAutenticada, setCajaAutenticada] = useState(null);
     const [estaAutenticado, setEstaAutenticado] = useState(false);
     const [turnoActual, setTurnoActual] = useState(null);  // Almacena el turno actual
@@ -79,7 +79,26 @@ function App() {
         return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+        const fetchUsuarios = async () => {
+            const usuariosCollection = await getDocs(collection(firestore, 'usuarios'));
+            setUsuarios(usuariosCollection.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+        };
+        fetchUsuarios();
+    }, []);
 
+    useEffect(() => {
+        const usuariosRef = collection(firestore, 'usuarios');
+        const unsubscribe = onSnapshot(usuariosRef, (snapshot) => {
+            let usuarios = [];
+            snapshot.forEach((doc) => {
+                usuarios.push({ ...doc.data(), id: doc.id });
+            });
+            setUsuarios(usuarios);
+        });
+        // Recuerda desuscribirte del observador en tiempo real cuando se desmonte
+        return () => unsubscribe();
+    }, []);
 
 
     const handleRegistrarCaja = async (caja) => {
@@ -91,6 +110,23 @@ function App() {
             console.error("Error writing document: ", error);
         }
     };
+
+
+    const handleRegistrarUsuario = async (usuario) => {
+        const usuarioExistente = usuarios.find((usr) => usr.nombre === usuario.nombre);
+        if (usuarioExistente) {
+            alert('El nombre de usuario ya está registrado. Por favor, elija otro nombre.');
+            return;
+        }
+        setUsuarios(prevUsuarios => [...prevUsuarios, usuario]);
+
+        try {
+            await setDoc(doc(collection(firestore, 'usuarios'), usuario.nombre), usuario);
+        } catch (error) {
+            console.error("Error escribiendo el documento: ", error);
+        }
+    };
+
     const handleBorrarCaja = async (cajaNombre) => {
         if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
             // Primero, eliminar el módulo.
@@ -154,18 +190,17 @@ function App() {
         return `${hours}h ${minutes}m ${seconds}s`;
     };
 
-    const handleAtenderTurno = async (turno) => {
+    const handleAtenderTurno = async (turno, moduloActual) => {
+
         const startTime = new Date();
 
         try {
             const turnoRef = doc(collection(firestore, 'turnos'), turno.id);
             await updateDoc(turnoRef, { Estado: 'ATENDIENDO', TiempoInicio: startTime });
-
-            // Crea una referencia al documento donde se guardará turnoActual
-            const turnoActualRef = doc(collection(firestore, 'turnoActual'), 'turnoActual');
-            // Actualiza o crea el documento con el nuevo turno actual
-            await setDoc(turnoActualRef, turno);
-
+            // Crea una referencia al documento de la caja
+            const moduloRef = doc(collection(firestore, 'cajas'), moduloActual.nombre);  // Asegúrate de tener disponible el nombre del moduloActual
+            // Actualiza el turnoActual en el documento de la caja
+            await updateDoc(moduloRef, { turnoActual: turno });
             // Establece el observador en el turno actual
             const unsubscribe = onSnapshot(turnoRef, (doc) => {
                 if (doc.data().Estado === 'FINALIZADO') {
@@ -182,6 +217,7 @@ function App() {
 
         setListaTurnos((prevTurnos) => prevTurnos.map((t) => t.id === turno.id ? { ...t, Estado: 'ATENDIENDO', TiempoInicio: startTime } : t));
     };
+
 
     const handleFinalizarTurno = async (turno) => {
         const endTime = new Date();
@@ -223,6 +259,9 @@ function App() {
                                 <Route path="/resetear-turnos" element={<ResetearTurnos />} />
                                 <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
                                 <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} turnoActual={turnoActual}/>} />
+                                <Route path="/vista-turnero" element={<VistaTurnero modulos={cajas}/>} />
+                                <Route path="/registrar-usuario" element={<RegistrarUsuario onRegistrarUsuario={handleRegistrarUsuario} usuarios={usuarios} />} />
+
                                 <Route path="/" element={<Menu />} />
                             </Routes>
                         </Router>
