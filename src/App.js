@@ -14,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
 import VistaTurnero from "./paginas/VistaTurnero/VistaTurnero";
 import RegistrarUsuario from "./paginas/RegistrarUsuario/RegistrarUsuario";
+import {GraficaTurnero} from "./paginas/GraficasTurnero/GraficaTurnero";
 
 function App() {
 
@@ -258,7 +259,7 @@ function App() {
                                 <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} turnoActual={turnoActual}/>} />
                                 <Route path="/vista-turnero" element={<VistaTurnero modulos={cajas}/>} />
                                 <Route path="/registrar-usuario" element={<RegistrarUsuario onRegistrarUsuario={handleRegistrarUsuario} usuarios={usuarios} modulos={cajas}/>} />
-
+                                <Route path="/grafica-turnos" element={<GraficaTurnero listaTurnos={listaTurnos} modulos={cajas}/>}/>
                                 <Route path="/" element={<Menu />} />
                             </Routes>
                         </Router>

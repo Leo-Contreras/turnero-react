@@ -64,6 +64,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
                     Lista de Modulos
                   </Button>
                 </div>
+                <div style={{ display: 'block', marginBottom: '10px' }}>
+                  <Button block as={Link} to="/grafica-turnos" className="w-100 custom-button">
+                    Graficas
+                  </Button>
+                </div>
               </Card.Text>
             </Card.Body>
           </Card>

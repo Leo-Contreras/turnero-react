@@ -38,7 +38,7 @@ const VistaTurnero = ({ modulos }) => {
             <div className="d-grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
                 {modulos.map((modulo, index) => (
                     <Card style={cardStyle} className="mb-4" key={index}>
-                        <Card.Header as="h5" style={cardTextStyle}>{modulo.nombre}</Card.Header>
+                        <Card.Header as="h5" style={cardTextStyle}>#{index}</Card.Header>
                         <Card.Body>
                             <Card.Text style={cardTextStyle}>
                                 {modulo.turnoActual ? modulo.turnoActual.Turno : '/// '} --> {modulo.nombre}

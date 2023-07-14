@@ -32,7 +32,6 @@ const RegistrarUsuario = ({ onRegistrarUsuario, usuarios, modulos }) => {
             alert('El nombre de usuario ya está registrado. Por favor, elija otro nombre.');
             return;
         }
-
         // Crear el nuevo usuario
         onRegistrarUsuario({ nombre: nombreUsuario, rol: rolUsuario, modulo: assignedModule });
         setNombreUsuario('');
