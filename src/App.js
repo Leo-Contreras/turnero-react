@@ -111,7 +111,6 @@ function App() {
         }
     };
 
-
     const handleRegistrarUsuario = async (usuario) => {
         const usuarioExistente = usuarios.find((usr) => usr.nombre === usuario.nombre);
         if (usuarioExistente) {
@@ -126,7 +125,6 @@ function App() {
             console.error("Error escribiendo el documento: ", error);
         }
     };
-
     const handleBorrarCaja = async (cajaNombre) => {
         if (window.confirm(`¿Estás seguro de que quieres borrar el módulo ${cajaNombre} y todos sus turnos?`)) {
             // Primero, eliminar el módulo.
@@ -189,7 +187,6 @@ function App() {
         const seconds = Math.floor(((duration % 3600000) % 60000) / 1000);
         return `${hours}h ${minutes}m ${seconds}s`;
     };
-
     const handleAtenderTurno = async (turno, moduloActual) => {
 
         const startTime = new Date();
@@ -260,7 +257,7 @@ function App() {
                                 <Route path="/solicitar-turno" element={<SolicitarTurno cajas={cajas} onSolicitarTurno={solicitarTurno} listaTurnos={listaTurnos} />} />
                                 <Route path="/visualizador-turnos" element={<TurnViewer turnos={listaTurnos} turnoActual={turnoActual}/>} />
                                 <Route path="/vista-turnero" element={<VistaTurnero modulos={cajas}/>} />
-                                <Route path="/registrar-usuario" element={<RegistrarUsuario onRegistrarUsuario={handleRegistrarUsuario} usuarios={usuarios} />} />
+                                <Route path="/registrar-usuario" element={<RegistrarUsuario onRegistrarUsuario={handleRegistrarUsuario} usuarios={usuarios} modulos={cajas}/>} />
 
                                 <Route path="/" element={<Menu />} />
                             </Routes>
