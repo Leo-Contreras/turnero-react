@@ -30,6 +30,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
               <Card.Title className="text-center">Menú</Card.Title>
               <Card.Text>
                 <div style={{ display: 'block', marginBottom: '10px' }}>
+                  <Button block as={Link} to="/vista-turnero" className="w-100 custom-button">
+                    Vista Turnero
+                  </Button>
+                </div>
+                <div style={{ display: 'block', marginBottom: '10px' }}>
                   <Button block as={Link} to="/visualizador-turnos" className="w-100 custom-button">
                     Visualizador de Turnos
                   </Button>
@@ -49,11 +54,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
                     Registrar Modulo
                   </Button>
                 </div>
-                <div style={{ display: 'block', marginBottom: '10px' }}>
-                  <Button block as={Link} to="/vista-turnero" className="w-100 custom-button">
-                    Vista Turnero
-                  </Button>
-                </div>
+
                 <div style={{ display: 'block', marginBottom: '10px' }}>
                   <Button  block as={Link} to="/registrar-usuario" className="w-100 custom-button">
                     Registrar Usuario
